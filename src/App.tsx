@@ -222,25 +222,43 @@ export default function App() {
                   Acesse fontes historiográficas, com citações automáticas em norma ABNT.
                 </p>
 
-                <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto mt-8">
-                  <input
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Ex: Tratado de Tordesilhas, Revolta da Vacina..."
-                    className="w-full pl-14 pr-32 py-5 bg-white border-2 border-stone-200 rounded-2xl shadow-sm focus:border-stone-900 focus:ring-0 transition-all text-lg"
-                  />
-                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-stone-400">
-                    <Search size={24} />
+                <div className="max-w-2xl mx-auto mt-8 space-y-4">
+                  <form onSubmit={handleSearch} className="relative">
+                    <input
+                      type="text"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Ex: Tratado de Tordesilhas, Revolta da Vacina..."
+                      className="w-full pl-14 pr-6 py-5 bg-white border-2 border-stone-200 rounded-2xl shadow-sm focus:border-stone-900 focus:ring-0 transition-all text-lg"
+                    />
+                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-stone-400">
+                      <Search size={24} />
+                    </div>
+                  </form>
+                  
+                  <div className="flex flex-wrap justify-center gap-4">
+                    <button
+                      onClick={(e) => handleSearch(e as any)}
+                      disabled={loading}
+                      className="bg-stone-900 text-amber-50 px-8 py-3 rounded-xl font-medium hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center gap-2 shadow-sm"
+                    >
+                      {loading ? <Loader2 className="animate-spin" size={20} /> : <Search size={20} />}
+                      Pesquisar
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowProjectGenerator(true);
+                        setShowAcademicWorks(false);
+                        setShowSaved(false);
+                        setShowGuide(false);
+                      }}
+                      className="bg-white border-2 border-stone-200 text-stone-900 px-8 py-3 rounded-xl font-medium hover:bg-stone-50 transition-colors flex items-center gap-2 shadow-sm"
+                    >
+                      <Sparkles size={20} className="text-amber-500" />
+                      Gerar Projeto
+                    </button>
                   </div>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-stone-900 text-amber-50 px-6 py-3 rounded-xl font-medium hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center gap-2"
-                  >
-                    {loading ? <Loader2 className="animate-spin" size={20} /> : 'Pesquisar'}
-                  </button>
-                </form>
+                </div>
               </section>
 
               {/* Error Message */}
