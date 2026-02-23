@@ -5,6 +5,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
+  FileText,
+  Image as ImageIcon,
+  Book,
+  Newspaper,
+  Archive,
   Search, 
   BookOpen, 
   Library, 
@@ -154,15 +159,29 @@ export default function App() {
 
               {/* Results Section */}
               {results && (
-                <section className="space-y-8">
+                <section className="space-y-10">
                   {results.sources.length > 0 ? (
                     <>
-                      <div className="border-l-4 border-stone-900 pl-6 py-2">
-                        <h3 className="font-serif text-2xl font-medium text-stone-900">Contexto Histórico</h3>
-                        <p className="text-stone-600 mt-2 leading-relaxed">{results.summary}</p>
-                      </div>
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-stone-900 text-amber-50 rounded-3xl p-8 shadow-xl relative overflow-hidden"
+                      >
+                        <div className="relative z-10">
+                          <div className="flex items-center gap-2 mb-4">
+                            <div className="w-8 h-8 bg-amber-50/10 rounded-full flex items-center justify-center">
+                              <Info size={16} className="text-amber-200" />
+                            </div>
+                            <h3 className="font-serif text-xl font-medium">Contexto Histórico</h3>
+                          </div>
+                          <p className="text-amber-50/80 leading-relaxed text-lg italic font-serif">
+                            "{results.summary}"
+                          </p>
+                        </div>
+                        <Quote className="absolute -bottom-4 -right-4 text-amber-50/5 w-48 h-48 rotate-12" />
+                      </motion.div>
 
-                      <div className="grid gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {results.sources.map((source, idx) => (
                           <SourceCard 
                             key={idx} 
@@ -176,9 +195,10 @@ export default function App() {
                       </div>
                     </>
                   ) : (
-                    <div className="text-center py-12 bg-stone-50 rounded-2xl border border-stone-100">
-                      <Info className="mx-auto text-stone-300 mb-3" size={32} />
-                      <p className="text-stone-500">Nenhuma fonte específica foi encontrada para esta busca. Tente termos mais abrangentes.</p>
+                    <div className="text-center py-20 bg-stone-50 rounded-3xl border border-stone-100">
+                      <Info className="mx-auto text-stone-300 mb-4" size={48} />
+                      <p className="text-stone-500 text-lg">Nenhuma fonte específica foi encontrada para esta busca.</p>
+                      <p className="text-stone-400 text-sm mt-2">Tente termos mais abrangentes ou verifique a grafia.</p>
                     </div>
                   )}
                 </section>
@@ -264,41 +284,54 @@ function SourceCard({
   onCopyCitation: () => void,
   isCopied: boolean
 }) {
+  const getIcon = (type: string) => {
+    switch (type) {
+      case 'document': return <FileText size={16} />;
+      case 'image': return <ImageIcon size={16} />;
+      case 'book': return <Book size={16} />;
+      case 'article': return <Newspaper size={16} />;
+      case 'archive': return <Archive size={16} />;
+      default: return <FileText size={16} />;
+    }
+  };
+
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'document': return 'bg-blue-50 text-blue-700 border-blue-100';
+      case 'image': return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+      case 'book': return 'bg-amber-50 text-amber-700 border-amber-100';
+      case 'article': return 'bg-purple-50 text-purple-700 border-purple-100';
+      case 'archive': return 'bg-stone-100 text-stone-700 border-stone-200';
+      default: return 'bg-stone-50 text-stone-600 border-stone-100';
+    }
+  };
+
   return (
     <motion.div 
       layout
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all group"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white border border-stone-200 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full group"
     >
-      <div className="flex justify-between items-start gap-4">
-        <div className="space-y-2 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 bg-stone-100 text-stone-600 text-[10px] font-bold uppercase tracking-wider rounded">
-              {source.type}
-            </span>
-            {source.institution && (
-              <span className="text-stone-400 text-xs flex items-center gap-1">
-                <Library size={12} />
-                {source.institution}
-              </span>
-            )}
-          </div>
-          <h4 className="font-serif text-xl font-medium text-stone-900 group-hover:text-stone-700 transition-colors">
-            {source.title}
-          </h4>
-          <p className="text-stone-500 text-sm leading-relaxed">
-            {source.description}
-          </p>
+      <div className="flex justify-between items-start mb-4">
+        <div className={cn(
+          "px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5",
+          getTypeColor(source.type)
+        )}>
+          {getIcon(source.type)}
+          {source.type}
         </div>
         
-        <div className="flex flex-col gap-2">
+        <div className="flex gap-1">
           <button 
             onClick={onToggleSave}
             className={cn(
-              "p-2 rounded-full border transition-all",
-              isSaved ? "bg-stone-900 border-stone-900 text-amber-50" : "bg-white border-stone-200 text-stone-400 hover:border-stone-900 hover:text-stone-900"
+              "p-2 rounded-full transition-all duration-300",
+              isSaved 
+                ? "bg-stone-900 text-amber-50 shadow-lg" 
+                : "text-stone-400 hover:bg-stone-100 hover:text-stone-900"
             )}
+            title={isSaved ? "Remover do acervo" : "Salvar no acervo"}
           >
             {isSaved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
           </button>
@@ -306,27 +339,50 @@ function SourceCard({
             href={source.url} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="p-2 rounded-full border border-stone-200 text-stone-400 hover:border-stone-900 hover:text-stone-900 bg-white transition-all"
+            className="p-2 rounded-full text-stone-400 hover:bg-stone-100 hover:text-stone-900 transition-all duration-300"
+            title="Acessar fonte original"
           >
             <ExternalLink size={18} />
           </a>
         </div>
       </div>
 
-      <div className="mt-6 pt-6 border-t border-stone-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex-1">
-          <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Citação ABNT</p>
-          <p className="font-mono text-[11px] text-stone-600 bg-stone-50 p-3 rounded-lg border border-stone-100 break-all">
-            {source.abntCitation}
-          </p>
+      <div className="flex-1 space-y-3">
+        <h4 className="font-serif text-xl font-semibold text-stone-900 leading-tight group-hover:text-stone-700 transition-colors">
+          {source.title}
+        </h4>
+        
+        {source.institution && (
+          <div className="flex items-center gap-1.5 text-stone-400 text-xs font-medium">
+            <Library size={14} className="shrink-0" />
+            <span className="truncate">{source.institution}</span>
+          </div>
+        )}
+
+        <p className="text-stone-500 text-sm leading-relaxed line-clamp-3 group-hover:line-clamp-none transition-all duration-500">
+          {source.description}
+        </p>
+      </div>
+
+      <div className="mt-6 pt-6 border-t border-stone-100 space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Citação ABNT</span>
+          <button 
+            onClick={onCopyCitation}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all duration-300",
+              isCopied 
+                ? "bg-emerald-50 text-emerald-700 border border-emerald-100" 
+                : "bg-stone-50 text-stone-600 border border-stone-200 hover:bg-stone-100"
+            )}
+          >
+            {isCopied ? <Check size={12} /> : <Copy size={12} />}
+            {isCopied ? 'COPIADO' : 'COPIAR'}
+          </button>
         </div>
-        <button 
-          onClick={onCopyCitation}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-stone-50 hover:bg-stone-100 text-stone-600 rounded-xl text-xs font-medium transition-colors border border-stone-200"
-        >
-          {isCopied ? <Check size={14} className="text-green-600" /> : <Copy size={14} />}
-          {isCopied ? 'Copiado!' : 'Copiar Citação'}
-        </button>
+        <div className="font-mono text-[10px] text-stone-500 bg-stone-50/50 p-3 rounded-xl border border-stone-100/50 leading-relaxed italic break-words">
+          {source.abntCitation}
+        </div>
       </div>
     </motion.div>
   );
