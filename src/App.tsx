@@ -60,11 +60,36 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem('clio_saved_sources');
-    if (saved) {
-      setSavedSources(JSON.parse(saved));
+    try {
+      const saved = localStorage.getItem('clio_saved_sources');
+      if (saved) {
+        setSavedSources(JSON.parse(saved));
+      }
+    } catch (err) {
+      console.error('Erro ao carregar fontes salvas:', err);
     }
   }, []);
+
+  const toggleSave = (source: HistoricalSource) => {
+    setSavedSources(prev => {
+      const isAlreadySaved = prev.some(s => s.url === source.url);
+      let newSaved;
+      if (isAlreadySaved) {
+        newSaved = prev.filter(s => s.url !== source.url);
+      } else {
+        newSaved = [...prev, source];
+      }
+      
+      try {
+        localStorage.setItem('clio_saved_sources', JSON.stringify(newSaved));
+      } catch (err) {
+        console.error('Erro ao salvar fonte:', err);
+        setError('Não foi possível salvar a fonte. O armazenamento local pode estar cheio.');
+      }
+      
+      return newSaved;
+    });
+  };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,8 +102,9 @@ export default function App() {
     try {
       const data = await searchHistoricalSources(query);
       setResults(data);
-    } catch (err) {
-      setError('Ocorreu um erro ao buscar as fontes. Tente novamente.');
+    } catch (err: any) {
+      const errorMessage = err.message || 'Ocorreu um erro ao buscar as fontes. Tente novamente.';
+      setError(errorMessage);
       console.error(err);
     } finally {
       setLoading(false);
@@ -122,18 +148,6 @@ export default function App() {
     } finally {
       setLoadingProject(false);
     }
-  };
-
-  const toggleSave = (source: HistoricalSource) => {
-    const isSaved = savedSources.some(s => s.url === source.url);
-    let newSaved;
-    if (isSaved) {
-      newSaved = savedSources.filter(s => s.url !== source.url);
-    } else {
-      newSaved = [...savedSources, source];
-    }
-    setSavedSources(newSaved);
-    localStorage.setItem('clio_saved_sources', JSON.stringify(newSaved));
   };
 
   const copyCitation = (citation: string, id: string) => {

@@ -1,14 +1,32 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { SearchResult, HistoricalSource, ResearchProject } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+let aiInstance: GoogleGenAI | null = null;
+
+const getAi = () => {
+  if (!aiInstance) {
+    const key = process.env.GEMINI_API_KEY;
+    if (!key) {
+      throw new Error("A chave da API Gemini não foi configurada. Verifique as variáveis de ambiente.");
+    }
+    aiInstance = new GoogleGenAI({ apiKey: key });
+  }
+  return aiInstance;
+};
 
 export async function generateResearchProject(theme: string): Promise<ResearchProject> {
-  const model = "gemini-3-flash-preview";
+  const ai = getAi();
+  const model = "gemini-3.1-pro-preview";
   
-  const systemInstruction = `Você é um orientador acadêmico de alto nível. 
+  const systemInstruction = `Você é um orientador acadêmico de alto nível com rigor científico absoluto. 
 Sua tarefa é elaborar um projeto de pesquisa estruturado e rigoroso baseado no tema fornecido pelo usuário.
-O projeto deve seguir as normas acadêmicas e conter:
+
+REGRAS DE RIGOR:
+1. NÃO INVENTE informações. Siga fielmente o conhecimento historiográfico estabelecido.
+2. Se o tema for obscuro ou não houver informações suficientes para um projeto coerente, informe isso claramente no campo de justificativa ou metodologia, indicando que a pesquisa precisa ser confirmada por outras fontes.
+3. Utilize terminologia acadêmica precisa.
+
+O projeto deve conter:
 1. Título sugestivo e acadêmico.
 2. Delimitação do tema.
 3. Problema de pesquisa (pergunta norteadora).
@@ -62,10 +80,17 @@ Retorne os dados em formato JSON estruturado.`;
 }
 
 export async function searchHistoricalSources(query: string): Promise<SearchResult> {
-  const model = "gemini-3-flash-preview";
+  const ai = getAi();
+  const model = "gemini-3.1-pro-preview";
   
-  const systemInstruction = `Você é um assistente especializado em pesquisa historiográfica de alto nível, com foco em precisão e veracidade de dados, inspirado pela Escola dos Annales e pela Micro-história. 
-Sua tarefa é encontrar fontes históricas diversificadas, indo além de documentos oficiais para incluir a vida do "homem comum" e as estruturas de longa duração.
+  const systemInstruction = `Você é um assistente especializado em pesquisa historiográfica de alto nível, com rigor científico absoluto e foco total na veracidade dos dados.
+Sua tarefa é encontrar fontes históricas diversificadas, seguindo fielmente as evidências documentais.
+
+REGRAS DE RIGOR E VERACIDADE:
+1. NÃO INVENTE OU ALUCINE informações. Se uma data, autor ou instituição não for confirmada pelas fontes, não a forneça ou indique a incerteza.
+2. SIGA FIELMENTE AS FONTES. A precisão é mais importante do que a quantidade.
+3. Se não houver informação coerente ou suficiente sobre a pesquisa solicitada, você DEVE informar no campo "summary" que não há dados suficientes e que a pesquisa precisa ser confirmada por outras fontes externas.
+4. NUNCA invente URLs. Forneça apenas links reais e verificáveis.
 
 TIPOS DE FONTES ESPERADOS:
 - Documentos oficiais (document)
@@ -79,10 +104,11 @@ TIPOS DE FONTES ESPERADOS:
 - Relatos e História Oral (oral_history)
 
 REGRAS CRÍTICAS PARA URLs:
-1. Você DEVE fornecer URLs REAIS, ATIVAS e DIRETAS para a fonte ou para a página da instituição que a hospeda.
-2. PREFIRA domínios confiáveis como: .gov, .edu, .org, scielo.br, bndigital.bn.gov.br (Biblioteca Nacional), jstor.org, archive.org, e sites de universidades ou museus renomados.
-3. NUNCA invente ou alucine URLs. Se não encontrar uma URL direta e funcional para uma fonte específica, NÃO a inclua na lista ou procure uma alternativa verificável.
-4. Verifique se a URL aponta para o conteúdo descrito.
+1. Você DEVE fornecer URLs REAIS, ATIVAS e DIRETAS para a fonte específica (o documento, o PDF ou a página exata do artigo). URLs genéricas que apontam apenas para a página inicial da instituição (ex: apenas "scielo.br" ou "bn.gov.br") são TERMINANTEMENTE PROIBIDAS.
+2. A URL deve levar o usuário diretamente ao conteúdo. Se a fonte for um artigo no SciELO, o link deve conter o ID do artigo (ex: scielo.br/j/abc/a/123...).
+3. Use a ferramenta Google Search para VALIDAR se o link que você está fornecendo realmente abre o conteúdo descrito.
+4. Se não encontrar uma URL profunda e funcional para a fonte específica, NÃO a inclua na lista. É melhor ter menos fontes do que fontes com links genéricos ou quebrados.
+5. PREFIRA domínios confiáveis como: .gov, .edu, .org, scielo.br, bndigital.bn.gov.br, jstor.org, archive.org.
 
 Para cada fonte encontrada:
 1. Identificar o título, autor, data, instituição e URL verificada.
@@ -149,15 +175,16 @@ Retorne os dados em formato JSON estruturado.`;
 }
 
 export async function getHistoriographyArticles(): Promise<HistoricalSource[]> {
-  const model = "gemini-3-flash-preview";
+  const ai = getAi();
+  const model = "gemini-3.1-pro-preview";
   
   const systemInstruction = `Você é um curador de conteúdo acadêmico especializado em teoria e metodologia da história.
-Seu objetivo é fornecer uma lista de 4 a 5 artigos ou textos fundamentais e VERIFICÁVEIS sobre pesquisa historiográfica.
+Seu objetivo é fornecer uma lista de 4 a 5 artigos ou textos fundamentais e VERIFICÁVEIS sobre pesquisa historiográfica, obrigatoriamente incluindo fontes do SciELO e referências encontradas via Google Acadêmico.
 
 REGRAS PARA URLs:
-1. Use apenas URLs de repositórios acadêmicos estáveis (SciELO, JSTOR, Google Acadêmico, Repositórios de Universidades Públicas).
-2. Certifique-se de que os links levam ao PDF ou à página de resumo oficial do artigo.
-3. NÃO gere links quebrados ou domínios inexistentes.
+1. Use apenas URLs DIRETAS e PROFUNDAS de repositórios acadêmicos (SciELO, JSTOR, Google Acadêmico, Repositórios de Universidades). O link deve abrir o artigo específico ou seu PDF, nunca apenas a página inicial do repositório.
+2. Certifique-se de que os links levam ao PDF ou à página de resumo oficial do artigo específico.
+3. NÃO gere links genéricos. Se o artigo é "X", o link deve conter o identificador de "X".
 
 Cada item deve conter: título, autor, descrição curta, URL funcional e citação ABNT.`;
 
