@@ -6,13 +6,24 @@ export interface HistoricalSource {
   url: string;
   description: string;
   socialContext?: string;
+  historiographicalSchool?: string;
+  criticalAnalysis?: string;
   type: 'document' | 'image' | 'book' | 'article' | 'archive' | 'newspaper' | 'literature' | 'letter' | 'oral_history';
   abntCitation?: string;
+  relevance?: number;
+  tags?: string[];
 }
 
 export interface SearchResult {
   sources: HistoricalSource[];
   summary: string;
+}
+
+export interface SavedSearch {
+  id: string;
+  query: string;
+  date: string;
+  result: SearchResult;
 }
 
 export interface ResearchProject {
