@@ -1,0 +1,80 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and subscription data",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "plan": { "type": "string", "enum": ["free", "professional", "institutional"], "description": "Current subscription plan" },
+        "subscriptionStatus": { "type": "string", "enum": ["active", "past_due", "canceled", "incomplete"], "description": "Stripe subscription status" },
+        "stripeCustomerId": { "type": "string" },
+        "stripeSubscriptionId": { "type": "string" },
+        "institutionId": { "type": "string", "description": "ID of the institution if plan is institutional" },
+        "role": { "type": "string", "enum": ["user", "admin", "inst_admin"], "description": "User role" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "plan"]
+    },
+    "Institution": {
+      "title": "Institution",
+      "description": "Educational or government institution",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "adminUid": { "type": "string", "description": "UID of the institutional admin" },
+        "domain": { "type": "string", "description": "Email domain for automatic association" },
+        "memberCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "adminUid"]
+    },
+    "UsageLog": {
+      "title": "UsageLog",
+      "description": "Tracking feature usage for limits and analytics",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "feature": { "type": "string", "enum": ["ia_search", "abnt_gen", "export_pdf", "export_docx"] },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "institutionId": { "type": "string" }
+      },
+      "required": ["uid", "feature", "timestamp"]
+    },
+    "SavedSource": {
+      "title": "SavedSource",
+      "description": "Historical sources saved by the user",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "source": { "type": "object" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "source"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/institutions/{instId}": {
+      "schema": "Institution",
+      "description": "Institutional data"
+    },
+    "/usage_logs/{logId}": {
+      "schema": "UsageLog",
+      "description": "Usage tracking"
+    },
+    "/users/{uid}/saved_sources/{sourceId}": {
+      "schema": "SavedSource",
+      "description": "User's saved sources"
+    }
+  }
+}

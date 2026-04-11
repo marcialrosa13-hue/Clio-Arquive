@@ -39,3 +39,15 @@ export interface ResearchProject {
   theoreticalFramework: string;
   expectedResults: string;
 }
+
+export type PlanType = 'free' | 'professional' | 'institutional';
+
+export interface UserProfile {
+  uid: string;
+  email: string;
+  displayName?: string;
+  photoURL?: string;
+  plan: PlanType;
+  role: 'user' | 'admin' | 'inst_admin';
+  institutionId?: string;
+}
