@@ -55,7 +55,8 @@ import { HistoricalSource, SearchResult, ResearchProject, SavedSearch, UserProfi
 import { ACADEMIC_WORK_TYPES } from './constants/academicWorks';
 import { auth, db, googleProvider } from './lib/firebase';
 import { signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth';
-import { doc, getDoc, setDoc, onSnapshot, collection, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, onSnapshot, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { LandingPage } from './components/LandingPage';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -88,12 +89,14 @@ export default function App() {
   const [showPlans, setShowPlans] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
   const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
+        setShowLanding(false);
         const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
         if (userDoc.exists()) {
           setProfile(userDoc.data() as UserProfile);
@@ -373,6 +376,19 @@ export default function App() {
       source.date?.toLowerCase().includes(filterDate.toLowerCase());
     return matchesType && matchesInstitution && matchesDate;
   }) || [];
+
+  if (showLanding && !user) {
+    return (
+      <LandingPage 
+        onStartFree={login} 
+        onTestPro={() => {
+          login().then(() => {
+            setShowPlans(true);
+          });
+        }} 
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen font-sans selection:bg-amber-100">
