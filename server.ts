@@ -179,6 +179,53 @@ Retorne os dados em formato JSON estruturado.`
   return JSON.parse(response.response.text());
 }
 
+async function generateLessonPlanServer(theme: string, level: string, period: string) {
+  const model = ai.getGenerativeModel({ 
+    model: "gemini-flash-latest",
+    systemInstruction: `Você é um assistente historiográfico e pedagógico do Clio Archive, especializado em criar planos de aula de História com alto rigor acadêmico e didática adaptada.
+    
+SUA MISSÃO:
+Criar planos de aula estruturados para professores de História, seguindo as diretrizes da BNCC e garantindo a precisão dos fatos históricos.
+
+DIRETRIZES:
+1. RIGOR HISTÓRICO: Baseie-se em historiografia atualizada. NUNCA invente fatos ou interpretações sem base.
+2. ADAPTAÇÃO: Ajuste a linguagem e a complexidade ao nível de ensino solicitado (Fundamental I, II ou Médio).
+3. ESTRUTURA FIXA: O plano deve conter: Título, Objetivo, Habilidades (BNCC), Conteúdo, Duração, Metodologia, Recursos, Atividade, Avaliação e Conexão com Fontes.
+4. AVISO: Sempre inclua o aviso: "Conteúdo gerado com apoio de IA. Recomenda-se revisão do professor."
+
+Retorne os dados em formato JSON estruturado.`
+  });
+
+  const response = await model.generateContent({
+    contents: [{ role: "user", parts: [{ text: `Crie um plano de aula de História sobre o tema: ${theme}. Nível: ${level}. Período: ${period}.` }] }],
+    generationConfig: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: SchemaType.OBJECT,
+        properties: {
+          title: { type: SchemaType.STRING },
+          objective: { type: SchemaType.STRING },
+          bnccSkills: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+          content: { type: SchemaType.STRING },
+          duration: { type: SchemaType.STRING },
+          methodology: { type: SchemaType.STRING },
+          resources: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+          activity: { type: SchemaType.STRING },
+          evaluation: { type: SchemaType.STRING },
+          historicalConnections: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+          level: { type: SchemaType.STRING },
+          period: { type: SchemaType.STRING }
+        },
+        required: ["title", "objective", "bnccSkills", "content", "duration", "methodology", "resources", "activity", "evaluation", "historicalConnections", "level", "period"]
+      }
+    }
+  });
+
+  const result = JSON.parse(response.response.text());
+  result.id = Math.random().toString(36).substr(2, 9);
+  return result;
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -218,6 +265,16 @@ async function startServer() {
   app.get("/api/gemini/articles", async (req, res) => {
     try {
       const result = await getHistoriographyArticlesServer();
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/gemini/lesson-plan", async (req, res) => {
+    const { theme, level, period } = req.body;
+    try {
+      const result = await generateLessonPlanServer(theme, level, period);
       res.json(result);
     } catch (error: any) {
       res.status(500).json({ error: error.message });

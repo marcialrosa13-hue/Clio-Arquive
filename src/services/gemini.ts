@@ -1,4 +1,4 @@
-import { SearchResult, HistoricalSource, ResearchProject } from "../types";
+import { SearchResult, HistoricalSource, ResearchProject, LessonPlan } from "../types";
 
 export async function generateResearchProject(theme: string): Promise<ResearchProject> {
   const response = await fetch("/api/gemini/project", {
@@ -9,6 +9,19 @@ export async function generateResearchProject(theme: string): Promise<ResearchPr
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.error || "Falha ao gerar projeto de pesquisa.");
+  }
+  return response.json();
+}
+
+export async function generateLessonPlan(theme: string, level: string, period: string): Promise<LessonPlan> {
+  const response = await fetch("/api/gemini/lesson-plan", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ theme, level, period })
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Falha ao gerar plano de aula.");
   }
   return response.json();
 }

@@ -45,7 +45,9 @@ import {
   CreditCard,
   LayoutDashboard,
   LogOut,
-  LogIn
+  LogIn,
+  Presentation,
+  Download
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
@@ -57,6 +59,7 @@ import { auth, db, googleProvider } from './lib/firebase';
 import { signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc, setDoc, onSnapshot, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { LandingPage } from './components/LandingPage';
+import { LessonPlanSection } from './components/LessonPlanSection';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -99,6 +102,7 @@ export default function App() {
   const [showAcademicNorms, setShowAcademicNorms] = useState(false);
   const [showAuthenticity, setShowAuthenticity] = useState(false);
   const [showTimeCartography, setShowTimeCartography] = useState(false);
+  const [showLessonPlans, setShowLessonPlans] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -160,6 +164,7 @@ export default function App() {
     setShowAcademicNorms(false);
     setShowAuthenticity(false);
     setShowTimeCartography(false);
+    setShowLessonPlans(false);
   };
 
   const handleUpgrade = async (plan: PlanType) => {
@@ -349,6 +354,7 @@ export default function App() {
       setShowAcademicNorms(false);
       setShowAuthenticity(false);
       setShowTimeCartography(false);
+      setShowLessonPlans(false);
       setShowPlans(false);
       setShowDashboard(false);
       return;
@@ -367,6 +373,7 @@ export default function App() {
     setShowAcademicNorms(false);
     setShowAuthenticity(false);
     setShowTimeCartography(false);
+    setShowLessonPlans(false);
     setShowPlans(false);
     setShowDashboard(false);
     try {
@@ -447,6 +454,7 @@ export default function App() {
             setShowAcademicNorms(false);
             setShowAuthenticity(false);
             setShowTimeCartography(false);
+            setShowLessonPlans(false);
             setResults(null);
             setQuery('');
           }}>
@@ -476,13 +484,14 @@ export default function App() {
                     setShowAcademicNorms(false);
                     setShowAuthenticity(false);
                     setShowTimeCartography(false);
+                    setShowLessonPlans(false);
                     setShowPlans(false);
                     setShowDashboard(false);
                     setResults(null);
                   }}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
-                    !results && !showSaved && !showGuide && !showAcademicWorks && !showProjectGenerator && !showGlobalArchives && !showABNT && !showPrimarySources && !showMethodology && !showDeepContext && !showAcademicNorms && !showAuthenticity && !showTimeCartography && !showPlans && !showDashboard
+                    !results && !showSaved && !showGuide && !showAcademicWorks && !showProjectGenerator && !showGlobalArchives && !showABNT && !showPrimarySources && !showMethodology && !showDeepContext && !showAcademicNorms && !showAuthenticity && !showTimeCartography && !showLessonPlans && !showPlans && !showDashboard
                       ? "bg-stone-100 text-stone-900" 
                       : "text-stone-600 hover:bg-stone-100/80"
                   )}
@@ -537,6 +546,7 @@ export default function App() {
                     setShowAcademicNorms(false);
                     setShowAuthenticity(false);
                     setShowTimeCartography(false);
+                    setShowLessonPlans(false);
                     setShowPlans(false);
                     setShowDashboard(false);
                   }}
@@ -563,6 +573,7 @@ export default function App() {
                     setShowAcademicNorms(false);
                     setShowAuthenticity(false);
                     setShowTimeCartography(false);
+                    setShowLessonPlans(false);
                     setShowPlans(false);
                     setShowDashboard(false);
                   }}
@@ -734,6 +745,7 @@ export default function App() {
                     setShowAcademicWorks(false);
                     setShowSaved(false);
                     setShowGuide(false);
+                    setShowLessonPlans(false);
                     setShowPlans(false);
                     setShowDashboard(false);
                   }}
@@ -744,6 +756,33 @@ export default function App() {
                 >
                   <MapIcon size={16} />
                   <span className="hidden lg:inline">Mapa</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    setShowLessonPlans(!showLessonPlans);
+                    setShowTimeCartography(false);
+                    setShowAuthenticity(false);
+                    setShowAcademicNorms(false);
+                    setShowDeepContext(false);
+                    setShowMethodology(false);
+                    setShowPrimarySources(false);
+                    setShowABNT(false);
+                    setShowGlobalArchives(false);
+                    setShowProjectGenerator(false);
+                    setShowAcademicWorks(false);
+                    setShowSaved(false);
+                    setShowGuide(false);
+                    setShowPlans(false);
+                    setShowDashboard(false);
+                  }}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
+                    showLessonPlans ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
+                  )}
+                >
+                  <Presentation size={16} />
+                  <span className="hidden lg:inline">Aulas</span>
                 </button>
 
                 {profile?.role === 'inst_admin' && (
@@ -789,6 +828,7 @@ export default function App() {
                     setShowAcademicNorms(false);
                     setShowAuthenticity(false);
                     setShowTimeCartography(false);
+                    setShowLessonPlans(false);
                     setShowDashboard(false);
                   }}
                   className={cn(
@@ -838,7 +878,7 @@ export default function App() {
 
       <main className="max-w-6xl mx-auto px-4 py-12">
         <AnimatePresence mode="wait">
-          {!showSaved && !showGuide && !showAcademicWorks && !showProjectGenerator && !showGlobalArchives && !showABNT && !showPrimarySources && !showMethodology && !showDeepContext && !showAcademicNorms && !showAuthenticity && !showTimeCartography && !showPlans && !showDashboard ? (
+          {!showSaved && !showGuide && !showAcademicWorks && !showProjectGenerator && !showGlobalArchives && !showABNT && !showPrimarySources && !showMethodology && !showDeepContext && !showAcademicNorms && !showAuthenticity && !showTimeCartography && !showLessonPlans && !showPlans && !showDashboard ? (
             <motion.div
               key="search-view"
               initial={{ opacity: 0, y: 20 }}
@@ -980,7 +1020,22 @@ export default function App() {
                       Cada documento passa por um crivo de análise de proveniência e intencionalidade. O ClioArchive ajuda a identificar silêncios e vozes marginais nos registros oficiais.
                     </p>
                     <div className="text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-amber-200 pb-1 inline-block">
-                      Iniciar Projeto de Pesquisa
+                      Explorar Crítica
+                    </div>
+                  </div>
+                </button>
+
+                <button onClick={() => setShowLessonPlans(true)} className="text-left w-full">
+                  <div className="editorial-frame bg-white/40 academic-shadow rounded-sm space-y-6 hover:scale-[1.02] transition-all duration-500 cursor-pointer">
+                    <div className="w-12 h-12 bg-stone-900 rounded-full flex items-center justify-center text-amber-50">
+                      <Presentation size={24} />
+                    </div>
+                    <h3 className="font-serif text-3xl font-bold text-stone-900">Planos de Aula</h3>
+                    <p className="text-stone-600 font-serif leading-relaxed italic">
+                      Recursos pedagógicos estruturados para professores de todos os níveis. Planos de aula práticos com rigor historiográfico e alinhados à BNCC.
+                    </p>
+                    <div className="text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-amber-200 pb-1 inline-block">
+                      Acessar Planos
                     </div>
                   </div>
                 </button>
@@ -1787,6 +1842,15 @@ RESULTADOS ESPERADOS: ${generatedProject.expectedResults}
                   </motion.div>
                 )}
               </div>
+            </motion.div>
+          ) : showLessonPlans ? (
+            <motion.div
+              key="lesson-plans-view"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <LessonPlanSection user={user} onBack={() => setShowLessonPlans(false)} />
             </motion.div>
           ) : showPlans ? (
             <motion.div

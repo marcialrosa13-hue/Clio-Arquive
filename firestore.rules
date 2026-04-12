@@ -72,6 +72,10 @@ service cloud.firestore {
       match /saved_sources/{sourceId} {
         allow read, write: if isOwner(userId);
       }
+
+      match /lesson_plans/{planId} {
+        allow read, write: if isOwner(userId);
+      }
     }
 
     match /institutions/{instId} {

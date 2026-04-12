@@ -87,3 +87,33 @@ body::before {
   animation: float 6s ease-in-out infinite;
 }
 
+@media print {
+  nav, button, .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    padding: 0 !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  main {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+  .bg-stone-900 {
+    background-color: white !important;
+    color: black !important;
+    border-bottom: 2px solid black;
+  }
+  .text-amber-50 {
+    color: black !important;
+  }
+  .bg-amber-400\/20, .bg-stone-800 {
+    background-color: #f3f4f6 !important;
+    color: black !important;
+    border: 1px solid #e5e7eb !important;
+  }
+}
+

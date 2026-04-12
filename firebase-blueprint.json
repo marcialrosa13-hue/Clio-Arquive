@@ -57,6 +57,27 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["uid", "source"]
+    },
+    "LessonPlan": {
+      "title": "LessonPlan",
+      "description": "History lesson plans generated or saved by teachers",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "objective": { "type": "string" },
+        "bnccSkills": { "type": "array", "items": { "type": "string" } },
+        "content": { "type": "string" },
+        "duration": { "type": "string" },
+        "methodology": { "type": "string" },
+        "resources": { "type": "array", "items": { "type": "string" } },
+        "activity": { "type": "string" },
+        "evaluation": { "type": "string" },
+        "historicalConnections": { "type": "array", "items": { "type": "string" } },
+        "level": { "type": "string", "enum": ["Fundamental I", "Fundamental II", "Ensino Médio"] },
+        "period": { "type": "string", "enum": ["Antiga", "Medieval", "Moderna", "Contemporânea", "História do Brasil"] },
+        "savedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "objective", "level", "period"]
     }
   },
   "firestore": {
@@ -75,6 +96,10 @@
     "/users/{uid}/saved_sources/{sourceId}": {
       "schema": "SavedSource",
       "description": "User's saved sources"
+    },
+    "/users/{uid}/lesson_plans/{planId}": {
+      "schema": "LessonPlan",
+      "description": "User's saved lesson plans"
     }
   }
 }

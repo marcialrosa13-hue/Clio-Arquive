@@ -51,3 +51,20 @@ export interface UserProfile {
   role: 'user' | 'admin' | 'inst_admin';
   institutionId?: string;
 }
+
+export interface LessonPlan {
+  id: string;
+  title: string;
+  objective: string;
+  bnccSkills: string[];
+  content: string;
+  duration: string;
+  methodology: string;
+  resources: string[];
+  activity: string;
+  evaluation: string;
+  historicalConnections: string[];
+  level: 'Fundamental I' | 'Fundamental II' | 'Ensino Médio';
+  period: 'Antiga' | 'Medieval' | 'Moderna' | 'Contemporânea' | 'História do Brasil';
+  isFavorite?: boolean;
+}
