@@ -6,10 +6,14 @@
   --font-serif: "Playfair Display", serif;
   --font-accent: "Cormorant Garamond", serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-primary: #1c1917;
+  --color-accent: #d97706;
+  --color-paper: #fdfcf8;
 }
 
 body {
-  @apply bg-[#fdfcf8] text-[#1c1917] selection:bg-amber-100 min-h-screen relative overflow-x-hidden;
+  @apply bg-paper text-primary selection:bg-amber-100 min-h-screen relative overflow-x-hidden;
   background-image: 
     radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 100%),
     url("https://www.transparenttextures.com/patterns/paper-fibers.png");

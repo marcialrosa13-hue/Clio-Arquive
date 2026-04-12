@@ -91,6 +91,14 @@ export default function App() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const [showGlobalArchives, setShowGlobalArchives] = useState(false);
+  const [showABNT, setShowABNT] = useState(false);
+  const [showPrimarySources, setShowPrimarySources] = useState(false);
+  const [showMethodology, setShowMethodology] = useState(false);
+  const [showDeepContext, setShowDeepContext] = useState(false);
+  const [showAcademicNorms, setShowAcademicNorms] = useState(false);
+  const [showAuthenticity, setShowAuthenticity] = useState(false);
+  const [showTimeCartography, setShowTimeCartography] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -144,6 +152,14 @@ export default function App() {
     setShowSaved(false);
     setShowDashboard(false);
     setShowPlans(false);
+    setShowGlobalArchives(false);
+    setShowABNT(false);
+    setShowPrimarySources(false);
+    setShowMethodology(false);
+    setShowDeepContext(false);
+    setShowAcademicNorms(false);
+    setShowAuthenticity(false);
+    setShowTimeCartography(false);
   };
 
   const handleUpgrade = async (plan: PlanType) => {
@@ -174,10 +190,11 @@ export default function App() {
       if (data.init_point) {
         window.location.href = data.init_point;
       } else {
-        throw new Error(data.error || 'Erro ao criar preferência de pagamento');
+        throw new Error(data.error || 'Erro ao processar pagamento. Verifique o Token do Mercado Pago.');
       }
     } catch (err: any) {
-      setError(err.message);
+      console.error('Erro no checkout:', err);
+      setError(err.message || 'Falha na conexão com o serviço de pagamentos.');
     } finally {
       setLoading(false);
     }
@@ -322,6 +339,18 @@ export default function App() {
     if (guideArticles.length > 0) {
       setShowGuide(true);
       setShowSaved(false);
+      setShowAcademicWorks(false);
+      setShowProjectGenerator(false);
+      setShowGlobalArchives(false);
+      setShowABNT(false);
+      setShowPrimarySources(false);
+      setShowMethodology(false);
+      setShowDeepContext(false);
+      setShowAcademicNorms(false);
+      setShowAuthenticity(false);
+      setShowTimeCartography(false);
+      setShowPlans(false);
+      setShowDashboard(false);
       return;
     }
 
@@ -330,6 +359,16 @@ export default function App() {
     setShowSaved(false);
     setShowAcademicWorks(false);
     setShowProjectGenerator(false);
+    setShowGlobalArchives(false);
+    setShowABNT(false);
+    setShowPrimarySources(false);
+    setShowMethodology(false);
+    setShowDeepContext(false);
+    setShowAcademicNorms(false);
+    setShowAuthenticity(false);
+    setShowTimeCartography(false);
+    setShowPlans(false);
+    setShowDashboard(false);
     try {
       const articles = await getHistoriographyArticles();
       setGuideArticles(articles);
@@ -400,6 +439,14 @@ export default function App() {
             setShowGuide(false);
             setShowAcademicWorks(false);
             setShowProjectGenerator(false);
+            setShowGlobalArchives(false);
+            setShowABNT(false);
+            setShowPrimarySources(false);
+            setShowMethodology(false);
+            setShowDeepContext(false);
+            setShowAcademicNorms(false);
+            setShowAuthenticity(false);
+            setShowTimeCartography(false);
             setResults(null);
             setQuery('');
           }}>
@@ -421,13 +468,21 @@ export default function App() {
                     setShowGuide(false);
                     setShowAcademicWorks(false);
                     setShowProjectGenerator(false);
+                    setShowGlobalArchives(false);
+                    setShowABNT(false);
+                    setShowPrimarySources(false);
+                    setShowMethodology(false);
+                    setShowDeepContext(false);
+                    setShowAcademicNorms(false);
+                    setShowAuthenticity(false);
+                    setShowTimeCartography(false);
                     setShowPlans(false);
                     setShowDashboard(false);
                     setResults(null);
                   }}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
-                    !results && !showSaved && !showGuide && !showAcademicWorks && !showProjectGenerator && !showPlans && !showDashboard
+                    !results && !showSaved && !showGuide && !showAcademicWorks && !showProjectGenerator && !showGlobalArchives && !showABNT && !showPrimarySources && !showMethodology && !showDeepContext && !showAcademicNorms && !showAuthenticity && !showTimeCartography && !showPlans && !showDashboard
                       ? "bg-stone-100 text-stone-900" 
                       : "text-stone-600 hover:bg-stone-100/80"
                   )}
@@ -453,6 +508,9 @@ export default function App() {
                     setShowSaved(false);
                     setShowGuide(false);
                     setShowProjectGenerator(false);
+                    setShowGlobalArchives(false);
+                    setShowABNT(false);
+                    setShowPrimarySources(false);
                     setShowPlans(false);
                     setShowDashboard(false);
                   }}
@@ -471,6 +529,14 @@ export default function App() {
                     setShowAcademicWorks(false);
                     setShowSaved(false);
                     setShowGuide(false);
+                    setShowGlobalArchives(false);
+                    setShowABNT(false);
+                    setShowPrimarySources(false);
+                    setShowMethodology(false);
+                    setShowDeepContext(false);
+                    setShowAcademicNorms(false);
+                    setShowAuthenticity(false);
+                    setShowTimeCartography(false);
                     setShowPlans(false);
                     setShowDashboard(false);
                   }}
@@ -483,6 +549,203 @@ export default function App() {
                   <span className="hidden lg:inline">Projeto</span>
                 </button>
 
+                <button 
+                  onClick={() => {
+                    setShowGlobalArchives(!showGlobalArchives);
+                    setShowProjectGenerator(false);
+                    setShowAcademicWorks(false);
+                    setShowSaved(false);
+                    setShowGuide(false);
+                    setShowABNT(false);
+                    setShowPrimarySources(false);
+                    setShowMethodology(false);
+                    setShowDeepContext(false);
+                    setShowAcademicNorms(false);
+                    setShowAuthenticity(false);
+                    setShowTimeCartography(false);
+                    setShowPlans(false);
+                    setShowDashboard(false);
+                  }}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
+                    showGlobalArchives ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
+                  )}
+                >
+                  <Library size={16} />
+                  <span className="hidden lg:inline">Acervos</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    setShowABNT(!showABNT);
+                    setShowPrimarySources(false);
+                    setShowGlobalArchives(false);
+                    setShowProjectGenerator(false);
+                    setShowAcademicWorks(false);
+                    setShowSaved(false);
+                    setShowGuide(false);
+                    setShowPlans(false);
+                    setShowDashboard(false);
+                  }}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
+                    showABNT ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
+                  )}
+                >
+                  <Quote size={16} />
+                  <span className="hidden lg:inline">ABNT</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    setShowPrimarySources(!showPrimarySources);
+                    setShowABNT(false);
+                    setShowGlobalArchives(false);
+                    setShowProjectGenerator(false);
+                    setShowAcademicWorks(false);
+                    setShowSaved(false);
+                    setShowGuide(false);
+                    setShowMethodology(false);
+                    setShowDeepContext(false);
+                    setShowAcademicNorms(false);
+                    setShowPlans(false);
+                    setShowDashboard(false);
+                  }}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
+                    showPrimarySources ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
+                  )}
+                >
+                  <BookOpen size={16} />
+                  <span className="hidden lg:inline">Fontes</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    setShowMethodology(!showMethodology);
+                    setShowDeepContext(false);
+                    setShowAcademicNorms(false);
+                    setShowPrimarySources(false);
+                    setShowABNT(false);
+                    setShowGlobalArchives(false);
+                    setShowProjectGenerator(false);
+                    setShowAcademicWorks(false);
+                    setShowSaved(false);
+                    setShowGuide(false);
+                    setShowPlans(false);
+                    setShowDashboard(false);
+                  }}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
+                    showMethodology ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
+                  )}
+                >
+                  <ShieldCheck size={16} />
+                  <span className="hidden lg:inline">Método</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    setShowDeepContext(!showDeepContext);
+                    setShowMethodology(false);
+                    setShowAcademicNorms(false);
+                    setShowPrimarySources(false);
+                    setShowABNT(false);
+                    setShowGlobalArchives(false);
+                    setShowProjectGenerator(false);
+                    setShowAcademicWorks(false);
+                    setShowSaved(false);
+                    setShowGuide(false);
+                    setShowPlans(false);
+                    setShowDashboard(false);
+                  }}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
+                    showDeepContext ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
+                  )}
+                >
+                  <Compass size={16} />
+                  <span className="hidden lg:inline">Contexto</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    setShowAcademicNorms(!showAcademicNorms);
+                    setShowDeepContext(false);
+                    setShowMethodology(false);
+                    setShowPrimarySources(false);
+                    setShowABNT(false);
+                    setShowGlobalArchives(false);
+                    setShowProjectGenerator(false);
+                    setShowAcademicWorks(false);
+                    setShowSaved(false);
+                    setShowGuide(false);
+                    setShowAuthenticity(false);
+                    setShowTimeCartography(false);
+                    setShowPlans(false);
+                    setShowDashboard(false);
+                  }}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
+                    showAcademicNorms ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
+                  )}
+                >
+                  <Scroll size={16} />
+                  <span className="hidden lg:inline">Normas</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    setShowAuthenticity(!showAuthenticity);
+                    setShowAcademicNorms(false);
+                    setShowDeepContext(false);
+                    setShowMethodology(false);
+                    setShowPrimarySources(false);
+                    setShowABNT(false);
+                    setShowGlobalArchives(false);
+                    setShowProjectGenerator(false);
+                    setShowAcademicWorks(false);
+                    setShowSaved(false);
+                    setShowGuide(false);
+                    setShowTimeCartography(false);
+                    setShowPlans(false);
+                    setShowDashboard(false);
+                  }}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
+                    showAuthenticity ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
+                  )}
+                >
+                  <Stamp size={16} />
+                  <span className="hidden lg:inline">Crítica</span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    setShowTimeCartography(!showTimeCartography);
+                    setShowAuthenticity(false);
+                    setShowAcademicNorms(false);
+                    setShowDeepContext(false);
+                    setShowMethodology(false);
+                    setShowPrimarySources(false);
+                    setShowABNT(false);
+                    setShowGlobalArchives(false);
+                    setShowProjectGenerator(false);
+                    setShowAcademicWorks(false);
+                    setShowSaved(false);
+                    setShowGuide(false);
+                    setShowPlans(false);
+                    setShowDashboard(false);
+                  }}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
+                    showTimeCartography ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
+                  )}
+                >
+                  <MapIcon size={16} />
+                  <span className="hidden lg:inline">Mapa</span>
+                </button>
+
                 {profile?.role === 'inst_admin' && (
                   <button 
                     onClick={() => {
@@ -491,6 +754,14 @@ export default function App() {
                       setShowGuide(false);
                       setShowAcademicWorks(false);
                       setShowProjectGenerator(false);
+                      setShowGlobalArchives(false);
+                      setShowABNT(false);
+                      setShowPrimarySources(false);
+                      setShowMethodology(false);
+                      setShowDeepContext(false);
+                      setShowAcademicNorms(false);
+                      setShowAuthenticity(false);
+                      setShowTimeCartography(false);
                       setShowPlans(false);
                     }}
                     className={cn(
@@ -510,6 +781,14 @@ export default function App() {
                     setShowGuide(false);
                     setShowAcademicWorks(false);
                     setShowProjectGenerator(false);
+                    setShowGlobalArchives(false);
+                    setShowABNT(false);
+                    setShowPrimarySources(false);
+                    setShowMethodology(false);
+                    setShowDeepContext(false);
+                    setShowAcademicNorms(false);
+                    setShowAuthenticity(false);
+                    setShowTimeCartography(false);
                     setShowDashboard(false);
                   }}
                   className={cn(
@@ -559,7 +838,7 @@ export default function App() {
 
       <main className="max-w-6xl mx-auto px-4 py-12">
         <AnimatePresence mode="wait">
-          {!showSaved && !showGuide && !showAcademicWorks && !showProjectGenerator ? (
+          {!showSaved && !showGuide && !showAcademicWorks && !showProjectGenerator && !showGlobalArchives && !showABNT && !showPrimarySources && !showMethodology && !showDeepContext && !showAcademicNorms && !showAuthenticity && !showTimeCartography && !showPlans && !showDashboard ? (
             <motion.div
               key="search-view"
               initial={{ opacity: 0, y: 20 }}
@@ -647,60 +926,64 @@ export default function App() {
 
                 {/* Gabinete Historiográfico (Feature Section) */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-32">
-                  <FeatureCard 
-                    icon={<ShieldCheck size={28} className="text-stone-800" />}
-                    title="Rigor Metodológico"
-                    description="Análises fundamentadas em princípios da crítica documental e hermenêutica histórica."
-                    accent="amber"
-                  />
-                  <FeatureCard 
-                    icon={<Compass size={28} className="text-stone-800" />}
-                    title="Contexto Profundo"
-                    description="Mapeamento de mentalidades, escolas historiográficas e tensões sociais de cada época."
-                    accent="stone"
-                  />
-                  <FeatureCard 
-                    icon={<Scroll size={28} className="text-stone-800" />}
-                    title="Normas Acadêmicas"
-                    description="Citações automáticas em ABNT e Chicago, prontas para teses, artigos e monografias."
-                    accent="amber"
-                  />
+                  <button onClick={() => setShowMethodology(true)} className="w-full text-left">
+                    <FeatureCard 
+                      icon={<ShieldCheck size={28} className="text-stone-800" />}
+                      title="Rigor Metodológico"
+                      description="Análises fundamentadas em princípios da crítica documental e hermenêutica histórica."
+                      accent="amber"
+                    />
+                  </button>
+                  <button onClick={() => setShowDeepContext(true)} className="w-full text-left">
+                    <FeatureCard 
+                      icon={<Compass size={28} className="text-stone-800" />}
+                      title="Contexto Profundo"
+                      description="Mapeamento de mentalidades, escolas historiográficas e tensões sociais de cada época."
+                      accent="stone"
+                    />
+                  </button>
+                  <button onClick={() => setShowAcademicNorms(true)} className="w-full text-left">
+                    <FeatureCard 
+                      icon={<Scroll size={28} className="text-stone-800" />}
+                      title="Normas Acadêmicas"
+                      description="Citações automáticas em ABNT e Chicago, prontas para teses, artigos e monografias."
+                      accent="amber"
+                    />
+                  </button>
                 </div>
               </section>
 
               {/* Secondary Cabinet Section */}
               <section className="grid grid-cols-1 md:grid-cols-2 gap-12 py-12">
-                <div className="editorial-frame bg-white/40 academic-shadow rounded-sm space-y-6">
-                  <div className="w-12 h-12 bg-stone-900 rounded-full flex items-center justify-center text-amber-50">
-                    <MapIcon size={24} />
+                <button onClick={() => setShowTimeCartography(true)} className="text-left w-full">
+                  <div className="editorial-frame bg-white/40 academic-shadow rounded-sm space-y-6 hover:scale-[1.02] transition-all duration-500 cursor-pointer">
+                    <div className="w-12 h-12 bg-stone-900 rounded-full flex items-center justify-center text-amber-50">
+                      <MapIcon size={24} />
+                    </div>
+                    <h3 className="font-serif text-3xl font-bold text-stone-900">Cartografia do Tempo</h3>
+                    <p className="text-stone-600 font-serif leading-relaxed italic">
+                      Visualize a dispersão geográfica e temporal das fontes. Entenda como o espaço e o tempo moldam a narrativa histórica através de nossa interface de linha do tempo integrada.
+                    </p>
+                    <div className="text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-amber-200 pb-1 inline-block">
+                      Explorar Metodologia
+                    </div>
                   </div>
-                  <h3 className="font-serif text-3xl font-bold text-stone-900">Cartografia do Tempo</h3>
-                  <p className="text-stone-600 font-serif leading-relaxed italic">
-                    Visualize a dispersão geográfica e temporal das fontes. Entenda como o espaço e o tempo moldam a narrativa histórica através de nossa interface de linha do tempo integrada.
-                  </p>
-                  <button 
-                    onClick={() => setShowGuide(true)}
-                    className="text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-amber-200 pb-1 hover:border-stone-900 transition-all"
-                  >
-                    Explorar Metodologia
-                  </button>
-                </div>
+                </button>
 
-                <div className="editorial-frame bg-white/40 academic-shadow rounded-sm space-y-6">
-                  <div className="w-12 h-12 bg-stone-900 rounded-full flex items-center justify-center text-amber-50">
-                    <Stamp size={24} />
+                <button onClick={() => setShowAuthenticity(true)} className="text-left w-full">
+                  <div className="editorial-frame bg-white/40 academic-shadow rounded-sm space-y-6 hover:scale-[1.02] transition-all duration-500 cursor-pointer">
+                    <div className="w-12 h-12 bg-stone-900 rounded-full flex items-center justify-center text-amber-50">
+                      <Stamp size={24} />
+                    </div>
+                    <h3 className="font-serif text-3xl font-bold text-stone-900">Crítica de Autenticidade</h3>
+                    <p className="text-stone-600 font-serif leading-relaxed italic">
+                      Cada documento passa por um crivo de análise de proveniência e intencionalidade. O ClioArchive ajuda a identificar silêncios e vozes marginais nos registros oficiais.
+                    </p>
+                    <div className="text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-amber-200 pb-1 inline-block">
+                      Iniciar Projeto de Pesquisa
+                    </div>
                   </div>
-                  <h3 className="font-serif text-3xl font-bold text-stone-900">Crítica de Autenticidade</h3>
-                  <p className="text-stone-600 font-serif leading-relaxed italic">
-                    Cada documento passa por um crivo de análise de proveniência e intencionalidade. O ClioArchive ajuda a identificar silêncios e vozes marginais nos registros oficiais.
-                  </p>
-                  <button 
-                    onClick={() => setShowProjectGenerator(true)}
-                    className="text-xs font-bold uppercase tracking-widest text-stone-900 border-b-2 border-amber-200 pb-1 hover:border-stone-900 transition-all"
-                  >
-                    Iniciar Projeto de Pesquisa
-                  </button>
-                </div>
+                </button>
               </section>
 
               {/* Error Message */}
@@ -896,23 +1179,393 @@ export default function App() {
               {/* Empty State */}
               {!results && !loading && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12">
-                  <FeatureCard 
-                    icon={<Library className="text-stone-500" />}
-                    title="Acervos Globais"
-                    description="Conexão com as principais instituições de pesquisa do mundo."
-                  />
-                  <FeatureCard 
-                    icon={<Quote className="text-stone-500" />}
-                    title="Normas ABNT"
-                    description="Citações prontas para uso em trabalhos acadêmicos e teses."
-                  />
-                  <FeatureCard 
-                    icon={<BookOpen className="text-stone-500" />}
-                    title="Fontes Primárias"
-                    description="Foco em documentos originais e registros historiográficos fiéis."
-                  />
+                  <button onClick={() => setShowGlobalArchives(true)} className="w-full">
+                    <FeatureCard 
+                      icon={<Library className="text-stone-500" />}
+                      title="Acervos Globais"
+                      description="Conexão com as principais instituições de pesquisa do mundo."
+                      accent="amber"
+                    />
+                  </button>
+                  <button onClick={() => setShowABNT(true)} className="w-full">
+                    <FeatureCard 
+                      icon={<Quote className="text-stone-500" />}
+                      title="Normas ABNT"
+                      description="Citações prontas para uso em trabalhos acadêmicos e teses."
+                    />
+                  </button>
+                  <button onClick={() => setShowPrimarySources(true)} className="w-full">
+                    <FeatureCard 
+                      icon={<BookOpen className="text-stone-500" />}
+                      title="Fontes Primárias"
+                      description="Foco em documentos originais e registros historiográficos fiéis."
+                    />
+                  </button>
                 </div>
               )}
+            </motion.div>
+          ) : showGlobalArchives ? (
+            <motion.div
+              key="global-archives-view"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-12"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="space-y-2">
+                  <h2 className="font-serif text-5xl font-bold text-stone-900 tracking-tight">Acervos Globais</h2>
+                  <p className="text-stone-500 text-lg font-serif italic">Instituições formais e repositórios acadêmicos de excelência.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setShowGlobalArchives(false)}
+                    className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
+                  >
+                    <Home size={16} />
+                    Início
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <ArchiveSection 
+                  title="Brasil: Instituições Nacionais"
+                  institutions={[
+                    { name: "Arquivo Nacional", url: "https://www.gov.br/arquivonacional", desc: "Principal instituição arquivística do Brasil, com vasto acervo documental do período colonial à república." },
+                    { name: "CPDOC / FGV", url: "https://cpdoc.fgv.br/", desc: "Centro de Pesquisa e Documentação de História Contemporânea do Brasil, referência em história política." },
+                    { name: "Biblioteca Nacional Digital", url: "https://bndigital.bn.gov.br/", desc: "Acesso a manuscritos, mapas, iconografia e obras raras digitalizadas." },
+                    { name: "Hemeroteca Digital Brasileira", url: "https://hemerotecadigital.bn.gov.br/", desc: "Portal de periódicos históricos brasileiros, essencial para pesquisa em imprensa." },
+                    { name: "Arquivo Público do Estado de SP", url: "http://www.arquivoestado.sp.gov.br/", desc: "Um dos maiores arquivos estaduais, com documentação administrativa e judiciária secular." },
+                    { name: "Museu da Pessoa", url: "https://www.museudapessoa.org/", desc: "Referência em História Oral, com milhares de depoimentos de vida e trajetórias sociais." }
+                  ]}
+                />
+                <ArchiveSection 
+                  title="Exterior: Repositórios Globais"
+                  institutions={[
+                    { name: "Internet Archive", url: "https://archive.org/", desc: "Biblioteca digital sem fins lucrativos com milhões de livros, filmes e sites históricos." },
+                    { name: "Europeana", url: "https://www.europeana.eu/", desc: "Portal de patrimônio cultural europeu, reunindo acervos de milhares de instituições da UE." },
+                    { name: "Library of Congress", url: "https://www.loc.gov/", desc: "A maior biblioteca do mundo, com coleções digitais imensas sobre história das Américas e global." },
+                    { name: "Gallica (BnF)", url: "https://gallica.bnf.fr/", desc: "Biblioteca digital da Biblioteca Nacional da França, fundamental para história moderna e contemporânea." },
+                    { name: "PARES (Espanha)", url: "http://pares.mcu.es/", desc: "Portal de Arquivos Espanhóis, essencial para pesquisa sobre o período colonial e impérios ibéricos." },
+                    { name: "British Library", url: "https://www.bl.uk/", desc: "Acervo monumental do Reino Unido, com digitalizações de manuscritos e jornais de todo o mundo." }
+                  ]}
+                />
+              </div>
+            </motion.div>
+          ) : showABNT ? (
+            <motion.div
+              key="abnt-view"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-12"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="space-y-2">
+                  <h2 className="font-serif text-5xl font-bold text-stone-900 tracking-tight">Normas ABNT</h2>
+                  <p className="text-stone-500 text-lg font-serif italic">Padronização e rigor na citação de fontes históricas.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setShowABNT(false)}
+                    className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
+                  >
+                    <Home size={16} />
+                    Início
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <ArchiveSection 
+                  title="Diretrizes e Manuais"
+                  institutions={[
+                    { name: "ABNT NBR 6023:2018", url: "https://www.abnt.org.br/", desc: "Norma que estabelece os elementos a serem incluídos em referências." },
+                    { name: "ABNT NBR 10520:2023", url: "https://www.abnt.org.br/", desc: "Norma que especifica as características das citações em documentos." },
+                    { name: "Guia de Citação UFSC (MORE)", url: "https://more.ufsc.br/", desc: "Ferramenta automática e gratuita para geração de referências bibliográficas." },
+                    { name: "Manual de Normalização USP", url: "https://www.bibliotecas.usp.br/apoio-pesquisador/normalizacao-trabalhos-academicos/", desc: "Excelentes guias práticos para aplicação das normas em teses e dissertações." }
+                  ]}
+                />
+                <ArchiveSection 
+                  title="Exemplos de Fontes Históricas"
+                  institutions={[
+                    { name: "Citação de Manuscritos", url: "#", desc: "AUTOR. Título. Local, data. Descrição física. Localização (Arquivo, Fundo, Série)." },
+                    { name: "Citação de Jornais Antigos", url: "#", desc: "TÍTULO do jornal. Local: Editora, data. Seção, página." },
+                    { name: "Citação de Entrevistas (História Oral)", url: "#", desc: "ENTREVISTADO. Título da entrevista. [Entrevista cedida a] Entrevistador. Local, data." },
+                    { name: "Citação de Mapas", url: "#", desc: "AUTOR. Título. Local: Editora, data. Escala. Projeção." }
+                  ]}
+                />
+              </div>
+            </motion.div>
+          ) : showMethodology ? (
+            <motion.div
+              key="methodology-view"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-12"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="space-y-2">
+                  <h2 className="font-serif text-5xl font-bold text-stone-900 tracking-tight">Rigor Metodológico</h2>
+                  <p className="text-stone-500 text-lg font-serif italic">A base científica da investigação histórica.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setShowMethodology(false)}
+                    className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
+                  >
+                    <Home size={16} />
+                    Início
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <ArchiveSection 
+                  title="Crítica Documental"
+                  institutions={[
+                    { name: "Heurística Histórica", url: "#", desc: "A arte de localizar e reunir as fontes necessárias para a pesquisa." },
+                    { name: "Hermenêutica", url: "#", desc: "Interpretação profunda dos textos e vestígios, considerando o contexto original." },
+                    { name: "Crítica Externa", url: "#", desc: "Verificação da autenticidade e integridade física do documento." },
+                    { name: "Crítica Interna", url: "#", desc: "Análise da veracidade e intenção do conteúdo do documento." }
+                  ]}
+                />
+                <ArchiveSection 
+                  title="Recursos Metodológicos"
+                  institutions={[
+                    { name: "SciELO História", url: "https://www.scielo.br/j/his/", desc: "Acesso a artigos científicos de alto impacto sobre teoria e método." },
+                    { name: "Revista de História (USP)", url: "https://www.revistas.usp.br/revhistoria", desc: "Uma das mais tradicionais publicações acadêmicas do Brasil." },
+                    { name: "Portal de Periódicos CAPES", url: "https://www.periodicos.capes.gov.br/", desc: "Biblioteca virtual que reúne o melhor da produção científica mundial." },
+                    { name: "Teoria da História (Wiki)", url: "https://pt.wikipedia.org/wiki/Teoria_da_hist%C3%B3ria", desc: "Visão geral sobre as correntes de pensamento historiográfico." }
+                  ]}
+                />
+              </div>
+            </motion.div>
+          ) : showDeepContext ? (
+            <motion.div
+              key="deep-context-view"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-12"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="space-y-2">
+                  <h2 className="font-serif text-5xl font-bold text-stone-900 tracking-tight">Contexto Profundo</h2>
+                  <p className="text-stone-500 text-lg font-serif italic">Mapeamento de mentalidades e tensões sociais.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setShowDeepContext(false)}
+                    className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
+                  >
+                    <Home size={16} />
+                    Início
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <ArchiveSection 
+                  title="Escolas Historiográficas"
+                  institutions={[
+                    { name: "Escola dos Annales", url: "#", desc: "Foco na longa duração, história das mentalidades e interdisciplinaridade." },
+                    { name: "Materialismo Histórico", url: "#", desc: "Análise das relações de produção e conflitos de classe como motor da história." },
+                    { name: "Nova História Cultural", url: "#", desc: "Estudo das representações, práticas e linguagens cotidianas." },
+                    { name: "Micro-história", url: "#", desc: "Redução da escala de observação para revelar dinâmicas sociais complexas." }
+                  ]}
+                />
+                <ArchiveSection 
+                  title="Repositórios de Contexto"
+                  institutions={[
+                    { name: "JSTOR (History)", url: "https://www.jstor.org/subject/history", desc: "Arquivo digital essencial para pesquisa em humanidades." },
+                    { name: "Project MUSE", url: "https://muse.jhu.edu/", desc: "Difusão de periódicos acadêmicos e livros de editoras universitárias." },
+                    { name: "Persée (França)", url: "https://www.persee.fr/", desc: "Portal de revistas científicas francesas em ciências humanas e sociais." },
+                    { name: "Internet Archive (Wayback Machine)", url: "https://archive.org/", desc: "Preservação da memória digital e acesso a livros de domínio público." }
+                  ]}
+                />
+              </div>
+            </motion.div>
+          ) : showAuthenticity ? (
+            <motion.div
+              key="authenticity-view"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-12"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="space-y-2">
+                  <h2 className="font-serif text-5xl font-bold text-stone-900 tracking-tight">Crítica de Autenticidade</h2>
+                  <p className="text-stone-500 text-lg font-serif italic">Análise de proveniência, intencionalidade e silêncios.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setShowAuthenticity(false)}
+                    className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
+                  >
+                    <Home size={16} />
+                    Início
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <ArchiveSection 
+                  title="Dimensões da Crítica"
+                  institutions={[
+                    { name: "Proveniência", url: "#", desc: "Rastreamento da origem do documento e sua cadeia de custódia ao longo do tempo." },
+                    { name: "Intencionalidade", url: "#", desc: "Investigação dos objetivos do autor e do público-alvo original do registro." },
+                    { name: "Análise de Silêncios", url: "#", desc: "O que o documento não diz? Identificação de vozes omitidas ou marginalizadas." },
+                    { name: "Diplomática", url: "#", desc: "Estudo da forma e estrutura dos documentos para validar sua autenticidade jurídica." }
+                  ]}
+                />
+                <ArchiveSection 
+                  title="Ferramentas de Verificação"
+                  institutions={[
+                    { name: "Arquivo Nacional (Brasil)", url: "https://www.gov.br/arquivonacional/pt-br", desc: "Referência em preservação e autenticidade de documentos públicos." },
+                    { name: "IFLA (Integridade)", url: "https://www.ifla.org/", desc: "Federação Internacional de Associações de Bibliotecários e Instituições." },
+                    { name: "UNESCO Memory of the World", url: "https://en.unesco.org/programme/mow", desc: "Programa para preservação do patrimônio documental da humanidade." },
+                    { name: "Fact-Checking Histórico", url: "#", desc: "Metodologias para combater o revisionismo ideológico e fake news históricas." }
+                  ]}
+                />
+              </div>
+            </motion.div>
+          ) : showTimeCartography ? (
+            <motion.div
+              key="time-cartography-view"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-12"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="space-y-2">
+                  <h2 className="font-serif text-5xl font-bold text-stone-900 tracking-tight">Cartografia do Tempo</h2>
+                  <p className="text-stone-500 text-lg font-serif italic">Visualização da dispersão geográfica e temporal das fontes.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setShowTimeCartography(false)}
+                    className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
+                  >
+                    <Home size={16} />
+                    Início
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <ArchiveSection 
+                  title="Geografia Histórica"
+                  institutions={[
+                    { name: "HGIS (Historical GIS)", url: "https://en.wikipedia.org/wiki/Historical_geographic_information_system", desc: "Uso de sistemas de informação geográfica para analisar o passado." },
+                    { name: "Old Maps Online", url: "https://www.oldmapsonline.org/", desc: "Portal para descoberta de mapas históricos em bibliotecas ao redor do mundo." },
+                    { name: "David Rumsey Map Collection", url: "https://www.davidrumsey.com/", desc: "Uma das maiores coleções de mapas históricos digitalizados." },
+                    { name: "Georreferenciamento", url: "#", desc: "Técnica de sobrepor mapas antigos em coordenadas geográficas modernas." }
+                  ]}
+                />
+                <ArchiveSection 
+                  title="Temporalidades"
+                  institutions={[
+                    { name: "Longa Duração (Braudel)", url: "#", desc: "Análise de estruturas sociais e geográficas que mudam muito lentamente." },
+                    { name: "Tempo Conjuntural", url: "#", desc: "Ciclos econômicos e sociais de média duração (décadas)." },
+                    { name: "Tempo do Evento", url: "https://pt.wikipedia.org/wiki/Tempo_hist%C3%B3rico", desc: "A história factual e política de curta duração." },
+                    { name: "Cronologias Comparadas", url: "#", desc: "Sincronização de eventos em diferentes regiões do globo." }
+                  ]}
+                />
+              </div>
+            </motion.div>
+          ) : showAcademicNorms ? (
+            <motion.div
+              key="academic-norms-view"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-12"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="space-y-2">
+                  <h2 className="font-serif text-5xl font-bold text-stone-900 tracking-tight">Normas Acadêmicas</h2>
+                  <p className="text-stone-500 text-lg font-serif italic">Padronização internacional e ética na pesquisa.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setShowAcademicNorms(false)}
+                    className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
+                  >
+                    <Home size={16} />
+                    Início
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <ArchiveSection 
+                  title="Sistemas de Citação"
+                  institutions={[
+                    { name: "Chicago Manual of Style", url: "https://www.chicagomanualofstyle.org/", desc: "O padrão ouro para historiadores (Notas-Bibliografia)." },
+                    { name: "APA Style", url: "https://apastyle.apa.org/", desc: "Sistema Autor-Data amplamente utilizado em ciências sociais." },
+                    { name: "Vancouver", url: "https://www.nlm.nih.gov/bsd/uniform_requirements.html", desc: "Sistema numérico comum em história da ciência e medicina." },
+                    { name: "MLA Style", url: "https://style.mla.org/", desc: "Focado em literatura e artes, útil para história cultural." }
+                  ]}
+                />
+                <ArchiveSection 
+                  title="Ferramentas de Gestão"
+                  institutions={[
+                    { name: "Zotero", url: "https://www.zotero.org/", desc: "Software livre para coletar, organizar e citar fontes de pesquisa." },
+                    { name: "Mendeley", url: "https://www.mendeley.com/", desc: "Gestor de referências e rede social acadêmica." },
+                    { name: "EndNote", url: "https://endnote.com/", desc: "Ferramenta profissional para gerenciamento bibliográfico complexo." },
+                    { name: "Turnitin (Ética)", url: "https://www.turnitin.com/", desc: "Recursos sobre integridade acadêmica e prevenção de plágio." }
+                  ]}
+                />
+              </div>
+            </motion.div>
+          ) : showPrimarySources ? (
+            <motion.div
+              key="primary-sources-view"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-12"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="space-y-2">
+                  <h2 className="font-serif text-5xl font-bold text-stone-900 tracking-tight">Fontes Primárias</h2>
+                  <p className="text-stone-500 text-lg font-serif italic">O contato direto com o passado através do documento original.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setShowPrimarySources(false)}
+                    className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
+                  >
+                    <Home size={16} />
+                    Início
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <ArchiveSection 
+                  title="O que são Fontes Primárias?"
+                  institutions={[
+                    { name: "Definição Historiográfica", url: "https://pt.wikipedia.org/wiki/Fonte_prim%C3%A1ria", desc: "Documentos contemporâneos ao evento estudado, sem mediação interpretativa posterior." },
+                    { name: "Crítica Documental", url: "#", desc: "A importância de questionar a intencionalidade, o suporte e o contexto de produção do documento." },
+                    { name: "Heurística e Hermenêutica", url: "#", desc: "Métodos de localização (heurística) e interpretação (hermenêutica) das fontes." }
+                  ]}
+                />
+                <ArchiveSection 
+                  title="Repositórios de Fontes Originais"
+                  institutions={[
+                    { name: "FamilySearch (Registros Paroquiais)", url: "https://www.familysearch.org/", desc: "Imensa base de dados de registros de nascimento, casamento e óbito (essencial para demografia histórica)." },
+                    { name: "Slave Voyages", url: "https://www.slavevoyages.org/", desc: "Banco de dados sobre o tráfico transatlântico de escravizados, com registros de navios e portos." },
+                    { name: "Brasil: Nunca Mais Digital", url: "http://bnmdigital.mpf.mp.br/", desc: "Documentação sobre a repressão política no Brasil durante a ditadura militar." },
+                    { name: "Vatican Digital Library", url: "https://digi.vatlib.it/", desc: "Acesso a manuscritos milenares e documentos da Igreja Católica." }
+                  ]}
+                />
+              </div>
             </motion.div>
           ) : showAcademicWorks ? (
             <motion.div
@@ -1866,6 +2519,30 @@ function Timeline({
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function ArchiveSection({ title, institutions }: { title: string, institutions: { name: string, url: string, desc: string }[] }) {
+  return (
+    <div className="glass-card p-8 academic-shadow rounded-[2.5rem] space-y-6">
+      <h4 className="font-serif text-2xl font-bold text-stone-900 border-b border-stone-100 pb-4">{title}</h4>
+      <div className="space-y-6">
+        {institutions.map((inst, i) => (
+          <div key={i} className="group">
+            <a 
+              href={inst.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center justify-between group-hover:text-amber-600 transition-colors"
+            >
+              <span className="font-bold text-lg font-serif">{inst.name}</span>
+              <ExternalLink size={16} />
+            </a>
+            <p className="text-sm text-stone-500 font-serif italic mt-1">{inst.desc}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
