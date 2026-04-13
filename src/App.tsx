@@ -1255,6 +1255,7 @@ export default function App() {
                       title="Acervos Globais"
                       description="Conexão com as principais instituições de pesquisa do mundo."
                       accent="amber"
+                      seed="library"
                     />
                   </button>
                   <button onClick={() => setShowABNT(true)} className="w-full">
@@ -1262,6 +1263,7 @@ export default function App() {
                       icon={<Quote className="text-stone-500" />}
                       title="Normas ABNT"
                       description="Citações prontas para uso em trabalhos acadêmicos e teses."
+                      seed="books"
                     />
                   </button>
                   <button onClick={() => setShowPrimarySources(true)} className="w-full">
@@ -1269,6 +1271,7 @@ export default function App() {
                       icon={<BookOpen className="text-stone-500" />}
                       title="Fontes Primárias"
                       description="Foco em documentos originais e registros historiográficos fiéis."
+                      seed="manuscript"
                     />
                   </button>
                 </div>
@@ -2668,26 +2671,32 @@ function ProjectSection({ title, content }: { title: string, content: string }) 
   );
 }
 
-function FeatureCard({ icon, title, description, accent = 'stone' }: { icon: React.ReactNode, title: string, description: string, accent?: 'amber' | 'stone' }) {
+function FeatureCard({ icon, title, description, accent = 'stone', seed = 'history' }: { icon: React.ReactNode, title: string, description: string, accent?: 'amber' | 'stone', seed?: string }) {
   return (
     <motion.div 
       whileHover={{ y: -8 }}
       className={cn(
-        "cabinet-border p-8 text-left bg-white transition-all duration-500 group",
+        "cabinet-border p-8 text-left bg-white transition-all duration-500 group relative overflow-hidden",
         accent === 'amber' ? "hover:border-amber-200" : "hover:border-stone-900"
       )}
     >
+      <img 
+        src={`https://picsum.photos/seed/${seed}/400/300`} 
+        alt="" 
+        className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-5 transition-opacity duration-700 pointer-events-none"
+        referrerPolicy="no-referrer"
+      />
       <div className={cn(
-        "w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 shadow-lg",
+        "w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 shadow-lg relative z-10",
         accent === 'amber' ? "bg-amber-50 text-amber-700 group-hover:bg-amber-100" : "bg-stone-100 text-stone-900 group-hover:bg-stone-900 group-hover:text-amber-50"
       )}>
         {icon}
       </div>
-      <h4 className="font-serif text-2xl font-bold text-stone-900 mb-3 tracking-tight">{title}</h4>
-      <p className="text-stone-500 text-sm leading-relaxed font-serif italic">
+      <h4 className="font-serif text-2xl font-bold text-stone-900 mb-3 tracking-tight relative z-10">{title}</h4>
+      <p className="text-stone-500 text-sm leading-relaxed font-serif italic relative z-10">
         {description}
       </p>
-      <div className="mt-6 w-8 h-0.5 bg-stone-200 group-hover:w-full transition-all duration-700" />
+      <div className="mt-6 w-8 h-0.5 bg-stone-200 group-hover:w-full transition-all duration-700 relative z-10" />
     </motion.div>
   );
 }

@@ -129,7 +129,13 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
           >
             <div className="absolute -inset-4 bg-stone-900/5 rounded-[2.5rem] blur-3xl" />
             <div className="relative bg-white border border-stone-200 rounded-[2rem] shadow-2xl overflow-hidden aspect-video flex flex-col">
-              <div className="h-12 border-b border-stone-100 bg-stone-50/50 flex items-center px-6 gap-2">
+              <img 
+                src="https://picsum.photos/seed/archive-app/1200/800" 
+                alt="ClioArchive Interface" 
+                className="absolute inset-0 w-full h-full object-cover opacity-10"
+                referrerPolicy="no-referrer"
+              />
+              <div className="h-12 border-b border-stone-100 bg-stone-50/50 flex items-center px-6 gap-2 relative z-10">
                 <div className="flex gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-stone-200" />
                   <div className="w-3 h-3 rounded-full bg-stone-200" />
@@ -137,22 +143,26 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
                 </div>
                 <div className="flex-1 max-w-md mx-auto h-6 bg-white rounded-md border border-stone-100" />
               </div>
-              <div className="flex-1 p-8 flex gap-8">
+              <div className="flex-1 p-8 flex gap-8 relative z-10">
                 <div className="w-64 space-y-4 hidden md:block">
-                  <div className="h-8 bg-stone-100 rounded-lg w-3/4" />
+                  <div className="h-8 bg-stone-100/50 rounded-lg w-3/4" />
                   <div className="space-y-2">
-                    <div className="h-4 bg-stone-50 rounded w-full" />
-                    <div className="h-4 bg-stone-50 rounded w-5/6" />
-                    <div className="h-4 bg-stone-50 rounded w-4/6" />
+                    <div className="h-4 bg-stone-50/50 rounded w-full" />
+                    <div className="h-4 bg-stone-50/50 rounded w-5/6" />
+                    <div className="h-4 bg-stone-50/50 rounded w-4/6" />
                   </div>
                 </div>
                 <div className="flex-1 space-y-6">
-                  <div className="h-12 bg-stone-50 rounded-xl w-full flex items-center px-4">
+                  <div className="h-12 bg-stone-50/50 rounded-xl w-full flex items-center px-4">
                     <Search size={16} className="text-stone-300" />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="h-48 bg-stone-50 rounded-2xl border border-stone-100" />
-                    <div className="h-48 bg-stone-50 rounded-2xl border border-stone-100" />
+                    <div className="h-48 bg-white/80 rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
+                      <img src="https://picsum.photos/seed/manuscript/400/300" alt="Manuscript" className="w-full h-full object-cover opacity-40" referrerPolicy="no-referrer" />
+                    </div>
+                    <div className="h-48 bg-white/80 rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
+                      <img src="https://picsum.photos/seed/oldmap/400/300" alt="Old Map" className="w-full h-full object-cover opacity-40" referrerPolicy="no-referrer" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -186,13 +196,24 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
               </div>
             </div>
             <div className="relative">
-              <div className="aspect-square bg-white rounded-[3rem] border border-slate-200 p-12 flex flex-col justify-center space-y-8 shadow-xl">
+              <div className="aspect-square bg-white rounded-[3rem] border border-slate-200 p-12 flex flex-col justify-center space-y-8 shadow-xl overflow-hidden group">
+                <img 
+                  src="https://picsum.photos/seed/old-library/800/800" 
+                  alt="Old Library" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:scale-110 transition-transform duration-700"
+                  referrerPolicy="no-referrer"
+                />
                 <Quote className="text-slate-100 w-32 h-32 absolute top-8 right-8 -z-0" />
                 <p className="text-2xl font-serif italic text-slate-800 relative z-10 leading-relaxed">
                   "O tempo gasto formatando referências e procurando documentos poderia ser investido na análise crítica e na escrita."
                 </p>
                 <div className="flex items-center gap-4 relative z-10">
-                  <div className="w-12 h-12 bg-slate-950 rounded-full" />
+                  <img 
+                    src="https://picsum.photos/seed/professor/100/100" 
+                    alt="Dr. Arnaldo Silva" 
+                    className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+                    referrerPolicy="no-referrer"
+                  />
                   <div>
                     <p className="font-bold text-sm">Dr. Arnaldo Silva</p>
                     <p className="text-xs text-slate-400 uppercase tracking-widest">Pesquisador Sênior</p>
@@ -293,12 +314,20 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { label: "Estudantes de Graduação", icon: <GraduationCap /> },
-              { label: "TCC e Monografia", icon: <FileText /> },
-              { label: "Pós-graduação", icon: <BookOpen /> },
-              { label: "Professores de História", icon: <Feather /> }
+              { label: "Estudantes de Graduação", icon: <GraduationCap />, seed: "student" },
+              { label: "TCC e Monografia", icon: <FileText />, seed: "writing" },
+              { label: "Pós-graduação", icon: <BookOpen />, seed: "researcher" },
+              { label: "Professores de História", icon: <Feather />, seed: "professor-history" }
             ].map((item, i) => (
-              <div key={i} className="flex flex-col items-center gap-4 p-8 bg-white rounded-3xl border border-slate-200 text-center">
+              <div key={i} className="flex flex-col items-center gap-4 p-8 bg-white rounded-3xl border border-slate-200 text-center group hover:border-slate-900 transition-all">
+                <div className="w-16 h-16 rounded-2xl overflow-hidden mb-2 shadow-sm">
+                  <img 
+                    src={`https://picsum.photos/seed/${item.seed}/200/200`} 
+                    alt={item.label} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
                 <div className="text-slate-900">{item.icon}</div>
                 <p className="font-serif font-bold text-slate-800">{item.label}</p>
               </div>
@@ -402,6 +431,12 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
       <section className="py-32 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="bg-slate-950 rounded-[4rem] p-12 md:p-24 text-center space-y-10 relative overflow-hidden">
+            <img 
+              src="https://picsum.photos/seed/library-dark/1600/900" 
+              alt="Library Background" 
+              className="absolute inset-0 w-full h-full object-cover opacity-20"
+              referrerPolicy="no-referrer"
+            />
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,#ffffff10,transparent)] pointer-events-none" />
             
             <div className="space-y-4 relative z-10">
