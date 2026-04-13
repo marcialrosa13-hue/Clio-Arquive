@@ -130,7 +130,7 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
             <div className="absolute -inset-4 bg-stone-900/5 rounded-[2.5rem] blur-3xl" />
             <div className="relative bg-white border border-stone-200 rounded-[2rem] shadow-2xl overflow-hidden aspect-video flex flex-col">
               <img 
-                src="https://picsum.photos/seed/archive-app/1200/800" 
+                src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&q=80&w=1200" 
                 alt="ClioArchive Interface" 
                 className="absolute inset-0 w-full h-full object-cover opacity-10"
                 referrerPolicy="no-referrer"
@@ -158,10 +158,10 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="h-48 bg-white/80 rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
-                      <img src="https://picsum.photos/seed/manuscript/400/300" alt="Manuscript" className="w-full h-full object-cover opacity-40" referrerPolicy="no-referrer" />
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Codex_Vaticanus_B_page_11.jpg/800px-Codex_Vaticanus_B_page_11.jpg" alt="Manuscript" className="w-full h-full object-cover opacity-60" referrerPolicy="no-referrer" />
                     </div>
                     <div className="h-48 bg-white/80 rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
-                      <img src="https://picsum.photos/seed/oldmap/400/300" alt="Old Map" className="w-full h-full object-cover opacity-40" referrerPolicy="no-referrer" />
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Mapa_do_Brasil_1519.jpg/800px-Mapa_do_Brasil_1519.jpg" alt="Old Map" className="w-full h-full object-cover opacity-60" referrerPolicy="no-referrer" />
                     </div>
                   </div>
                 </div>
@@ -198,7 +198,7 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
             <div className="relative">
               <div className="aspect-square bg-white rounded-[3rem] border border-slate-200 p-12 flex flex-col justify-center space-y-8 shadow-xl overflow-hidden group">
                 <img 
-                  src="https://picsum.photos/seed/old-library/800/800" 
+                  src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=1200" 
                   alt="Old Library" 
                   className="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:scale-110 transition-transform duration-700"
                   referrerPolicy="no-referrer"
@@ -209,7 +209,7 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
                 </p>
                 <div className="flex items-center gap-4 relative z-10">
                   <img 
-                    src="https://picsum.photos/seed/professor/100/100" 
+                    src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&q=80&w=200" 
                     alt="Dr. Arnaldo Silva" 
                     className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
                     referrerPolicy="no-referrer"
@@ -330,15 +330,15 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { label: "Estudantes de Graduação", icon: <GraduationCap />, seed: "student" },
-              { label: "TCC e Monografia", icon: <FileText />, seed: "writing" },
-              { label: "Pós-graduação", icon: <BookOpen />, seed: "researcher" },
-              { label: "Professores de História", icon: <Feather />, seed: "professor-history" }
+              { label: "Estudantes de Graduação", icon: <GraduationCap />, url: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=400" },
+              { label: "TCC e Monografia", icon: <FileText />, url: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=400" },
+              { label: "Pós-graduação", icon: <BookOpen />, url: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=400" },
+              { label: "Professores de História", icon: <Feather />, url: "https://images.unsplash.com/photo-1491843351663-7304c982d9d1?auto=format&fit=crop&q=80&w=400" }
             ].map((item, i) => (
               <div key={i} className="flex flex-col items-center gap-4 p-8 bg-white rounded-3xl border border-slate-200 text-center group hover:border-slate-900 transition-all">
                 <div className="w-16 h-16 rounded-2xl overflow-hidden mb-2 shadow-sm">
                   <img 
-                    src={`https://picsum.photos/seed/${item.seed}/200/200`} 
+                    src={item.url} 
                     alt={item.label} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     referrerPolicy="no-referrer"
@@ -448,7 +448,7 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
         <div className="max-w-7xl mx-auto px-6">
           <div className="bg-slate-950 rounded-[4rem] p-12 md:p-24 text-center space-y-10 relative overflow-hidden">
             <img 
-              src="https://picsum.photos/seed/library-dark/1600/900" 
+              src="https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&q=80&w=1600" 
               alt="Library Background" 
               className="absolute inset-0 w-full h-full object-cover opacity-20"
               referrerPolicy="no-referrer"

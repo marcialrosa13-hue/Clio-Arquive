@@ -1255,7 +1255,7 @@ export default function App() {
                       title="Acervos Globais"
                       description="Conexão com as principais instituições de pesquisa do mundo."
                       accent="amber"
-                      seed="library"
+                      imageUrl="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=400"
                     />
                   </button>
                   <button onClick={() => setShowABNT(true)} className="w-full">
@@ -1263,7 +1263,7 @@ export default function App() {
                       icon={<Quote className="text-stone-500" />}
                       title="Normas ABNT"
                       description="Citações prontas para uso em trabalhos acadêmicos e teses."
-                      seed="books"
+                      imageUrl="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&q=80&w=400"
                     />
                   </button>
                   <button onClick={() => setShowPrimarySources(true)} className="w-full">
@@ -1271,7 +1271,7 @@ export default function App() {
                       icon={<BookOpen className="text-stone-500" />}
                       title="Fontes Primárias"
                       description="Foco em documentos originais e registros historiográficos fiéis."
-                      seed="manuscript"
+                      imageUrl="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Codex_Vaticanus_B_page_11.jpg/400px-Codex_Vaticanus_B_page_11.jpg"
                     />
                   </button>
                 </div>
@@ -2671,7 +2671,7 @@ function ProjectSection({ title, content }: { title: string, content: string }) 
   );
 }
 
-function FeatureCard({ icon, title, description, accent = 'stone', seed = 'history' }: { icon: React.ReactNode, title: string, description: string, accent?: 'amber' | 'stone', seed?: string }) {
+function FeatureCard({ icon, title, description, accent = 'stone', imageUrl = 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&q=80&w=400' }: { icon: React.ReactNode, title: string, description: string, accent?: 'amber' | 'stone', imageUrl?: string }) {
   return (
     <motion.div 
       whileHover={{ y: -8 }}
@@ -2681,7 +2681,7 @@ function FeatureCard({ icon, title, description, accent = 'stone', seed = 'histo
       )}
     >
       <img 
-        src={`https://picsum.photos/seed/${seed}/400/300`} 
+        src={imageUrl} 
         alt="" 
         className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-5 transition-opacity duration-700 pointer-events-none"
         referrerPolicy="no-referrer"
