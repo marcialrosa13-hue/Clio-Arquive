@@ -237,19 +237,27 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { title: "Fontes confiáveis", desc: "Acesso direto a acervos digitais de instituições renomadas.", icon: <Library /> },
-              { title: "Contexto estruturado", desc: "Análise historiográfica e mapeamento de mentalidades.", icon: <Compass /> },
-              { title: "Citação ABNT", desc: "Geração automática conforme a NBR 6023 em um clique.", icon: <Scroll /> },
-              { title: "Organização", desc: "Crie coleções e organize seu material por temas ou épocas.", icon: <Layers /> },
-              { title: "IA Assistiva", desc: "Localize trechos e temas específicos em segundos.", icon: <Sparkles /> },
-              { title: "Rigor Acadêmico", desc: "Ferramentas desenhadas por e para historiadores.", icon: <ShieldCheck /> }
+              { title: "Fontes confiáveis", desc: "Acesso direto a acervos digitais de instituições renomadas.", icon: <Library />, seed: "ancient-books" },
+              { title: "Contexto estruturado", desc: "Análise historiográfica e mapeamento de mentalidades.", icon: <Compass />, seed: "old-map-detail" },
+              { title: "Citação ABNT", desc: "Geração automática conforme a NBR 6023 em um clique.", icon: <Scroll />, seed: "calligraphy" },
+              { title: "Organização", desc: "Crie coleções e organize seu material por temas ou épocas.", icon: <Layers />, seed: "archive-boxes" },
+              { title: "IA Assistiva", desc: "Localize trechos e temas específicos em segundos.", icon: <Sparkles />, seed: "digital-library" },
+              { title: "Rigor Acadêmico", desc: "Ferramentas desenhadas por e para historiadores.", icon: <ShieldCheck />, seed: "university-hall" }
             ].map((item, i) => (
-              <div key={i} className="p-8 bg-slate-50 rounded-3xl border border-slate-100 hover:border-slate-950 transition-all group">
-                <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-950 mb-6 shadow-sm group-hover:bg-slate-950 group-hover:text-blue-50 transition-all">
-                  {item.icon}
+              <div key={i} className="p-8 bg-slate-50 rounded-3xl border border-slate-100 hover:border-slate-950 transition-all group relative overflow-hidden">
+                <img 
+                  src={`https://picsum.photos/seed/${item.seed}/400/300`} 
+                  alt={item.title} 
+                  className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="relative z-10">
+                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-950 mb-6 shadow-sm group-hover:bg-slate-950 group-hover:text-blue-50 transition-all">
+                    {item.icon}
+                  </div>
+                  <h3 className="font-serif text-xl font-bold mb-3">{item.title}</h3>
+                  <p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p>
                 </div>
-                <h3 className="font-serif text-xl font-bold mb-3">{item.title}</h3>
-                <p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -290,15 +298,23 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
             <div className="absolute top-1/2 left-0 w-full h-px bg-slate-100 hidden md:block -z-0" />
             {[
-              { step: "01", title: "Busque o tema", desc: "Inicie sua investigação por palavras-chave ou épocas." },
-              { step: "02", title: "Acesse a fonte", desc: "Explore documentos originais e análises críticas." },
-              { step: "03", title: "Organize", desc: "Salve em suas coleções pessoais de pesquisa." },
-              { step: "04", title: "Gere a citação", desc: "Copie a referência em ABNT pronta para o seu texto." }
+              { step: "01", title: "Busque o tema", desc: "Inicie sua investigação por palavras-chave ou épocas.", seed: "search-history" },
+              { step: "02", title: "Acesse a fonte", desc: "Explore documentos originais e análises críticas.", seed: "old-document" },
+              { step: "03", title: "Organize", desc: "Salve em suas coleções pessoais de pesquisa.", seed: "folders" },
+              { step: "04", title: "Gere a citação", desc: "Copie a referência em ABNT pronta para o seu texto.", seed: "citation" }
             ].map((item, i) => (
-              <div key={i} className="relative z-10 bg-white p-8 rounded-3xl border border-slate-100 text-center space-y-4 hover:shadow-xl transition-all">
-                <span className="font-mono text-slate-200 text-5xl font-black block">{item.step}</span>
-                <h3 className="font-serif text-xl font-bold">{item.title}</h3>
-                <p className="text-slate-500 text-sm">{item.desc}</p>
+              <div key={i} className="relative z-10 bg-white p-8 rounded-3xl border border-slate-100 text-center space-y-4 hover:shadow-xl transition-all group overflow-hidden">
+                <img 
+                  src={`https://picsum.photos/seed/${item.seed}/400/300`} 
+                  alt={item.title} 
+                  className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-5 transition-opacity duration-500 pointer-events-none"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="relative z-10">
+                  <span className="font-mono text-slate-200 text-5xl font-black block group-hover:text-slate-100 transition-colors">{item.step}</span>
+                  <h3 className="font-serif text-xl font-bold">{item.title}</h3>
+                  <p className="text-slate-500 text-sm">{item.desc}</p>
+                </div>
               </div>
             ))}
           </div>
