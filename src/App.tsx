@@ -495,6 +495,7 @@ export default function App() {
                       ? "bg-stone-100 text-stone-900" 
                       : "text-stone-600 hover:bg-stone-100/80"
                   )}
+                  title="Página Inicial"
                 >
                   <Home size={16} />
                   <span className="hidden lg:inline">Início</span>
@@ -506,6 +507,7 @@ export default function App() {
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
                     showGuide ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
                   )}
+                  title="Guia de Pesquisa"
                 >
                   <BookOpen size={16} />
                   <span className="hidden lg:inline">Guia</span>
@@ -527,6 +529,7 @@ export default function App() {
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
                     showAcademicWorks ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
                   )}
+                  title="Trabalhos Acadêmicos"
                 >
                   <FileText size={16} />
                   <span className="hidden lg:inline">Trabalhos</span>
@@ -554,6 +557,7 @@ export default function App() {
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
                     showProjectGenerator ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
                   )}
+                  title="Gerador de Projetos"
                 >
                   <Sparkles size={16} className="text-amber-500" />
                   <span className="hidden lg:inline">Projeto</span>
@@ -581,6 +585,7 @@ export default function App() {
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
                     showGlobalArchives ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
                   )}
+                  title="Acervos Globais"
                 >
                   <Library size={16} />
                   <span className="hidden lg:inline">Acervos</span>
@@ -602,6 +607,7 @@ export default function App() {
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
                     showABNT ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
                   )}
+                  title="Normas ABNT"
                 >
                   <Quote size={16} />
                   <span className="hidden lg:inline">ABNT</span>
@@ -626,6 +632,7 @@ export default function App() {
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
                     showPrimarySources ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
                   )}
+                  title="Fontes Primárias"
                 >
                   <BookOpen size={16} />
                   <span className="hidden lg:inline">Fontes</span>
@@ -650,6 +657,7 @@ export default function App() {
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
                     showMethodology ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
                   )}
+                  title="Rigor Metodológico"
                 >
                   <ShieldCheck size={16} />
                   <span className="hidden lg:inline">Método</span>
@@ -674,6 +682,7 @@ export default function App() {
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
                     showDeepContext ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
                   )}
+                  title="Contexto Profundo"
                 >
                   <Compass size={16} />
                   <span className="hidden lg:inline">Contexto</span>
@@ -700,6 +709,7 @@ export default function App() {
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
                     showAcademicNorms ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
                   )}
+                  title="Normas Acadêmicas"
                 >
                   <Scroll size={16} />
                   <span className="hidden lg:inline">Normas</span>
@@ -726,6 +736,7 @@ export default function App() {
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
                     showAuthenticity ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
                   )}
+                  title="Crítica de Autenticidade"
                 >
                   <Stamp size={16} />
                   <span className="hidden lg:inline">Crítica</span>
@@ -753,6 +764,7 @@ export default function App() {
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
                     showTimeCartography ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
                   )}
+                  title="Cartografia do Tempo"
                 >
                   <MapIcon size={16} />
                   <span className="hidden lg:inline">Mapa</span>
@@ -780,6 +792,7 @@ export default function App() {
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
                     showLessonPlans ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
                   )}
+                  title="Planos de Aula"
                 >
                   <Presentation size={16} />
                   <span className="hidden lg:inline">Aulas</span>
@@ -807,6 +820,7 @@ export default function App() {
                       "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
                       showDashboard ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
                     )}
+                    title="Painel de Controle"
                   >
                     <LayoutDashboard size={16} />
                     <span className="hidden lg:inline">Dashboard</span>
@@ -835,6 +849,7 @@ export default function App() {
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
                     showPlans ? "bg-stone-100 text-stone-900" : "text-stone-600 hover:bg-stone-100/80"
                   )}
+                  title="Planos de Assinatura"
                 >
                   <CreditCard size={16} />
                   <span className="hidden lg:inline">Planos</span>
@@ -2374,6 +2389,15 @@ function SourceCard({
     }
   };
 
+  const isVerified = source.url && (
+    source.url.includes('scielo.br') || 
+    source.url.includes('jstor.org') || 
+    source.url.includes('gov.br') || 
+    source.url.includes('bn.gov.br') ||
+    source.url.includes('.edu') ||
+    source.url.includes('archive.org')
+  );
+
   return (
     <motion.div 
       layout
@@ -2382,12 +2406,26 @@ function SourceCard({
       className="glass-card rounded-[2.5rem] p-8 academic-shadow hover:scale-[1.01] transition-all duration-500 flex flex-col h-full group relative overflow-hidden"
     >
       <div className="flex justify-between items-start mb-6">
-        <div className={cn(
-          "px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-2 shadow-sm",
-          getTypeColor(source.type)
-        )}>
-          {getIcon(source.type)}
-          {getTranslatedType(source.type)}
+        <div className="flex flex-wrap gap-2">
+          <div className={cn(
+            "px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-2 shadow-sm",
+            getTypeColor(source.type)
+          )}>
+            {getIcon(source.type)}
+            {getTranslatedType(source.type)}
+          </div>
+          {isVerified && (
+            <div className="px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-2 shadow-sm">
+              <ShieldCheck size={12} />
+              Fonte Verificada
+            </div>
+          )}
+          {!source.url && (
+            <div className="px-4 py-1.5 rounded-full bg-stone-100 text-stone-500 border border-stone-200 text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-2 shadow-sm">
+              <Info size={12} />
+              Localização Física/Digital
+            </div>
+          )}
         </div>
         
         <div className="flex gap-2">
@@ -2413,15 +2451,25 @@ function SourceCard({
           >
             {isSaved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
           </button>
-          <a 
-            href={source.url} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="p-2.5 bg-white border border-stone-200 text-stone-400 hover:text-stone-900 rounded-xl transition-all duration-300 shadow-sm"
-            title="Acessar fonte original"
-          >
-            <ExternalLink size={18} />
-          </a>
+          {source.url ? (
+            <a 
+              href={source.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="p-2.5 bg-white border border-stone-200 text-stone-400 hover:text-stone-900 rounded-xl transition-all duration-300 shadow-sm"
+              title="Acessar fonte original"
+            >
+              <ExternalLink size={18} />
+            </a>
+          ) : (
+            <button 
+              className="p-2.5 bg-stone-50 border border-stone-100 text-stone-300 rounded-xl cursor-not-allowed"
+              title="Link direto indisponível (veja instruções na descrição)"
+              disabled
+            >
+              <ExternalLink size={18} />
+            </button>
+          )}
         </div>
       </div>
 
