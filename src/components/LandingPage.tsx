@@ -18,7 +18,8 @@ import {
   History,
   Sparkles,
   FileText,
-  ChevronRight
+  ChevronRight,
+  Mic2
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -130,9 +131,9 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
             <div className="absolute -inset-4 bg-stone-900/5 rounded-[2.5rem] blur-3xl" />
             <div className="relative bg-white border border-stone-200 rounded-[2rem] shadow-2xl overflow-hidden aspect-video flex flex-col">
               <img 
-                src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&q=80&w=1200" 
+                src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1200&auto=format&fit=crop" 
                 alt="ClioArchive Interface" 
-                className="absolute inset-0 w-full h-full object-cover opacity-10"
+                className="absolute inset-0 w-full h-full object-cover opacity-30"
                 referrerPolicy="no-referrer"
               />
               <div className="h-12 border-b border-stone-100 bg-stone-50/50 flex items-center px-6 gap-2 relative z-10">
@@ -153,15 +154,26 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
                   </div>
                 </div>
                 <div className="flex-1 space-y-6">
-                  <div className="h-12 bg-stone-50/50 rounded-xl w-full flex items-center px-4">
+                  <div className="h-12 bg-stone-50/50 rounded-xl w-full flex items-center justify-between px-4">
                     <Search size={16} className="text-stone-300" />
+                    <Mic2 size={16} className="text-stone-300" />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="h-48 bg-white/80 rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Codex_Vaticanus_B_page_11.jpg/800px-Codex_Vaticanus_B_page_11.jpg" alt="Manuscript" className="w-full h-full object-cover opacity-60" referrerPolicy="no-referrer" />
+                    <div className="h-48 bg-stone-200 rounded-2xl border border-stone-200 shadow-sm overflow-hidden relative">
+                      <img 
+                        src="https://images.unsplash.com/photo-1491843351663-7304c982d9d1?q=80&w=800&auto=format&fit=crop" 
+                        alt="Antique Books" 
+                        className="w-full h-full object-cover" 
+                        referrerPolicy="no-referrer"
+                      />
                     </div>
-                    <div className="h-48 bg-white/80 rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Mapa_do_Brasil_1519.jpg/800px-Mapa_do_Brasil_1519.jpg" alt="Old Map" className="w-full h-full object-cover opacity-60" referrerPolicy="no-referrer" />
+                    <div className="h-48 bg-stone-200 rounded-2xl border border-stone-200 shadow-sm overflow-hidden relative">
+                      <img 
+                        src="https://images.unsplash.com/photo-1505664194779-8beaceb93744?q=80&w=800&auto=format&fit=crop" 
+                        alt="Historical Archive" 
+                        className="w-full h-full object-cover" 
+                        referrerPolicy="no-referrer"
+                      />
                     </div>
                   </div>
                 </div>
@@ -210,13 +222,13 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
                 <div className="flex items-center gap-4 relative z-10">
                   <img 
                     src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&q=80&w=200" 
-                    alt="Dr. Arnaldo Silva" 
+                    alt="Attribution" 
                     className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
                     referrerPolicy="no-referrer"
                   />
                   <div>
-                    <p className="font-bold text-sm">Dr. Arnaldo Silva</p>
-                    <p className="text-xs text-slate-400 uppercase tracking-widest">Pesquisador Sênior</p>
+                    <p className="font-bold text-sm">Especialista ClioArchive</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-widest">Pesquisador</p>
                   </div>
                 </div>
               </div>
@@ -237,16 +249,16 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { title: "Fontes confiáveis", desc: "Acesso direto a acervos digitais de instituições renomadas.", icon: <Library />, seed: "ancient-books" },
-              { title: "Contexto estruturado", desc: "Análise historiográfica e mapeamento de mentalidades.", icon: <Compass />, seed: "old-map-detail" },
-              { title: "Citação ABNT", desc: "Geração automática conforme a NBR 6023 em um clique.", icon: <Scroll />, seed: "calligraphy" },
-              { title: "Organização", desc: "Crie coleções e organize seu material por temas ou épocas.", icon: <Layers />, seed: "archive-boxes" },
-              { title: "IA Assistiva", desc: "Localize trechos e temas específicos em segundos.", icon: <Sparkles />, seed: "digital-library" },
-              { title: "Rigor Acadêmico", desc: "Ferramentas desenhadas por e para historiadores.", icon: <ShieldCheck />, seed: "university-hall" }
+              { title: "Fontes confiáveis", desc: "Acesso direto a acervos digitais de instituições renomadas.", icon: <Library />, url: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=400" },
+              { title: "Contexto estruturado", desc: "Análise historiográfica e mapeamento de mentalidades.", icon: <Compass />, url: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=400" },
+              { title: "Citação ABNT", desc: "Geração automática conforme a NBR 6023 em um clique.", icon: <Scroll />, url: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&q=80&w=400" },
+              { title: "Organização", desc: "Crie coleções e organize seu material por temas ou épocas.", icon: <Layers />, url: "https://images.unsplash.com/photo-1544640808-32ca72ac7f37?auto=format&fit=crop&q=80&w=400" },
+              { title: "IA Assistiva", desc: "Localize trechos e temas específicos em segundos.", icon: <Sparkles />, url: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&q=80&w=400" },
+              { title: "Rigor Acadêmico", desc: "Ferramentas desenhadas por e para historiadores.", icon: <ShieldCheck />, url: "https://images.unsplash.com/photo-1491843351663-7304c982d9d1?auto=format&fit=crop&q=80&w=400" }
             ].map((item, i) => (
               <div key={i} className="p-8 bg-slate-50 rounded-3xl border border-slate-100 hover:border-slate-950 transition-all group relative overflow-hidden">
                 <img 
-                  src={`https://picsum.photos/seed/${item.seed}/400/300`} 
+                  src={item.url} 
                   alt={item.title} 
                   className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none"
                   referrerPolicy="no-referrer"
@@ -298,14 +310,14 @@ export function LandingPage({ onStartFree, onTestPro }: LandingPageProps) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
             <div className="absolute top-1/2 left-0 w-full h-px bg-slate-100 hidden md:block -z-0" />
             {[
-              { step: "01", title: "Busque o tema", desc: "Inicie sua investigação por palavras-chave ou épocas.", seed: "search-history" },
-              { step: "02", title: "Acesse a fonte", desc: "Explore documentos originais e análises críticas.", seed: "old-document" },
-              { step: "03", title: "Organize", desc: "Salve em suas coleções pessoais de pesquisa.", seed: "folders" },
-              { step: "04", title: "Gere a citação", desc: "Copie a referência em ABNT pronta para o seu texto.", seed: "citation" }
+              { step: "01", title: "Busque o tema", desc: "Inicie sua investigação por palavras-chave ou épocas.", url: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=400" },
+              { step: "02", title: "Acesse a fonte", desc: "Explore documentos originais e análises críticas.", url: "https://images.unsplash.com/photo-1585241936939-f4049b40c741?auto=format&fit=crop&q=80&w=400" },
+              { step: "03", title: "Organize", desc: "Salve em suas coleções pessoais de pesquisa.", url: "https://images.unsplash.com/photo-1544640808-32ca72ac7f37?auto=format&fit=crop&q=80&w=400" },
+              { step: "04", title: "Gere a citação", desc: "Copie a referência em ABNT pronta para o seu texto.", url: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=400" }
             ].map((item, i) => (
               <div key={i} className="relative z-10 bg-white p-8 rounded-3xl border border-slate-100 text-center space-y-4 hover:shadow-xl transition-all group overflow-hidden">
                 <img 
-                  src={`https://picsum.photos/seed/${item.seed}/400/300`} 
+                  src={item.url} 
                   alt={item.title} 
                   className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-5 transition-opacity duration-500 pointer-events-none"
                   referrerPolicy="no-referrer"

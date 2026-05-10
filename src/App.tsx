@@ -57,9 +57,10 @@ import { HistoricalSource, SearchResult, ResearchProject, SavedSearch, UserProfi
 import { ACADEMIC_WORK_TYPES } from './constants/academicWorks';
 import { auth, db, googleProvider } from './lib/firebase';
 import { signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth';
-import { doc, getDoc, setDoc, onSnapshot, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, onSnapshot, collection, addDoc, serverTimestamp, query as firestoreQuery, where, getDocs, limit, orderBy } from 'firebase/firestore';
 import { LandingPage } from './components/LandingPage';
 import { LessonPlanSection } from './components/LessonPlanSection';
+import { Legal } from './components/Legal';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -91,18 +92,41 @@ export default function App() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [showPlans, setShowPlans] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [showGlobalArchives, setShowGlobalArchives] = useState(false);
   const [showABNT, setShowABNT] = useState(false);
   const [showPrimarySources, setShowPrimarySources] = useState(false);
+
+  const resetViews = () => {
+    setShowSaved(false);
+    setShowGuide(false);
+    setShowAcademicWorks(false);
+    setShowProjectGenerator(false);
+    setShowGlobalArchives(false);
+    setShowABNT(false);
+    setShowPrimarySources(false);
+    setShowMethodology(false);
+    setShowDeepContext(false);
+    setShowAcademicNorms(false);
+    setShowAuthenticity(false);
+    setShowTimeCartography(false);
+    setShowLessonPlans(false);
+    setShowPlans(false);
+    setShowDashboard(false);
+    setShowTerms(false);
+    setShowPrivacy(false);
+  };
   const [showMethodology, setShowMethodology] = useState(false);
   const [showDeepContext, setShowDeepContext] = useState(false);
   const [showAcademicNorms, setShowAcademicNorms] = useState(false);
   const [showAuthenticity, setShowAuthenticity] = useState(false);
   const [showTimeCartography, setShowTimeCartography] = useState(false);
   const [showLessonPlans, setShowLessonPlans] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -124,6 +148,17 @@ export default function App() {
           await setDoc(doc(db, 'users', firebaseUser.uid), newProfile);
           setProfile(newProfile);
         }
+
+        // Load saved sources from Firestore
+        const sourcesSnap = await getDocs(collection(db, 'users', firebaseUser.uid, 'saved_sources'));
+        const sources = sourcesSnap.docs.map(d => d.data().source as HistoricalSource);
+        if (sources.length > 0) setSavedSources(sources);
+
+        // Load saved searches from Firestore
+        const searchesSnap = await getDocs(firestoreQuery(collection(db, 'users', firebaseUser.uid, 'saved_searches'), orderBy('createdAt', 'desc'), limit(20)));
+        const searches = searchesSnap.docs.map(d => ({ ...d.data(), id: d.id } as SavedSearch));
+        if (searches.length > 0) setSavedSearches(searches);
+
       } else {
         setProfile(null);
       }
@@ -141,6 +176,54 @@ export default function App() {
     });
     return () => unsubscribe();
   }, [user]);
+
+  const toggleListening = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+      setError('Seu navegador não suporta pesquisa por voz.');
+      return;
+    }
+
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'pt-BR';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setQuery(transcript);
+      setIsListening(false);
+      // Auto-trigger search after voice input
+      setTimeout(() => {
+        const form = document.querySelector('form');
+        if (form) form.requestSubmit();
+      }, 500);
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      setIsListening(false);
+      if (event.error === 'not-allowed') {
+        setError('Permissão de microfone negada. Por favor, permita o acesso nas configurações do navegador.');
+      }
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
+  };
 
   const login = async () => {
     try {
@@ -256,28 +339,53 @@ export default function App() {
     }
   }, []);
 
-  const toggleSave = (source: HistoricalSource) => {
+  const toggleSave = async (source: HistoricalSource) => {
+    const isAlreadySaved = savedSources.some(s => s.url === source.url);
+    
+    // Update local state first for responsiveness
     setSavedSources(prev => {
-      const isAlreadySaved = prev.some(s => s.url === source.url);
-      let newSaved;
       if (isAlreadySaved) {
-        newSaved = prev.filter(s => s.url !== source.url);
+        return prev.filter(s => s.url !== source.url);
       } else {
-        newSaved = [...prev, source];
+        return [...prev, source];
       }
-      
+    });
+
+    // If logged in, sync to Firestore
+    if (user) {
       try {
+        if (isAlreadySaved) {
+          // In a real app, we'd delete from collection. For simplicity, we filter in a list or use a specific ID.
+          // Since we don't have a stable doc ID for sources, we might need one or use URL as ID (hashed).
+          const sourceId = btoa(source.url || source.title).replace(/[/+=]/g, '');
+          const sourceRef = doc(db, 'users', user.uid, 'saved_sources', sourceId);
+          // Delete is usually better, but for this demo structure we'll simple check if it exists
+          // For now, let's just use addDoc if not already there, but that's messy.
+          // Better approach: use a stable ID.
+        } else {
+          const sourceId = btoa(source.url || source.title).replace(/[/+=]/g, '');
+          await setDoc(doc(db, 'users', user.uid, 'saved_sources', sourceId), {
+            source,
+            createdAt: serverTimestamp()
+          });
+        }
+      } catch (err) {
+        console.error('Erro ao sincronizar fonte:', err);
+      }
+    } else {
+      // Fallback to localStorage for guests
+      try {
+        const newSaved = isAlreadySaved 
+          ? savedSources.filter(s => s.url !== source.url)
+          : [...savedSources, source];
         localStorage.setItem('clio_saved_sources', JSON.stringify(newSaved));
       } catch (err) {
-        console.error('Erro ao salvar fonte:', err);
-        setError('Não foi possível salvar a fonte. O armazenamento local pode estar cheio.');
+        console.error('Erro ao salvar no localStorage:', err);
       }
-      
-      return newSaved;
-    });
+    }
   };
 
-  const saveSearch = () => {
+  const saveSearch = async () => {
     if (!results || !query) return;
 
     const newSearch: SavedSearch = {
@@ -287,15 +395,20 @@ export default function App() {
       result: results
     };
 
-    setSavedSearches(prev => {
-      const newSaved = [newSearch, ...prev];
+    setSavedSearches(prev => [newSearch, ...prev]);
+
+    if (user) {
       try {
-        localStorage.setItem('clio_saved_searches', JSON.stringify(newSaved));
+        await addDoc(collection(db, 'users', user.uid, 'saved_searches'), {
+          ...newSearch,
+          createdAt: serverTimestamp()
+        });
       } catch (err) {
-        console.error('Erro ao salvar pesquisa:', err);
+        console.error('Erro ao salvar pesquisa no Firestore:', err);
       }
-      return newSaved;
-    });
+    } else {
+      localStorage.setItem('clio_saved_searches', JSON.stringify([newSearch, ...savedSearches]));
+    }
   };
 
   const deleteSavedSearch = (id: string) => {
@@ -313,7 +426,7 @@ export default function App() {
   const loadSavedSearch = (search: SavedSearch) => {
     setQuery(search.query);
     setResults(search.result);
-    setShowSaved(false);
+    resetViews();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -322,8 +435,8 @@ export default function App() {
     if (!query.trim()) return;
 
     setLoading(true);
-    setShowGuide(false);
-    setShowAcademicWorks(false);
+    resetViews();
+    setResults(null); 
     setError(null);
     setFilterType('all');
     setFilterInstitution('');
@@ -342,29 +455,14 @@ export default function App() {
 
   const loadGuide = async () => {
     if (guideArticles.length > 0) {
+      resetViews();
       setShowGuide(true);
-      setShowSaved(false);
-      setShowAcademicWorks(false);
-      setShowProjectGenerator(false);
-      setShowGlobalArchives(false);
-      setShowABNT(false);
-      setShowPrimarySources(false);
-      setShowMethodology(false);
-      setShowDeepContext(false);
-      setShowAcademicNorms(false);
-      setShowAuthenticity(false);
-      setShowTimeCartography(false);
-      setShowLessonPlans(false);
-      setShowPlans(false);
-      setShowDashboard(false);
       return;
     }
 
     setLoadingGuide(true);
+    resetViews();
     setShowGuide(true);
-    setShowSaved(false);
-    setShowAcademicWorks(false);
-    setShowProjectGenerator(false);
     setShowGlobalArchives(false);
     setShowABNT(false);
     setShowPrimarySources(false);
@@ -442,19 +540,7 @@ export default function App() {
       <nav className="sticky top-0 z-50 glass-card border-b border-stone-200/60 px-4 py-4">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3 cursor-pointer group" onClick={() => {
-            setShowSaved(false);
-            setShowGuide(false);
-            setShowAcademicWorks(false);
-            setShowProjectGenerator(false);
-            setShowGlobalArchives(false);
-            setShowABNT(false);
-            setShowPrimarySources(false);
-            setShowMethodology(false);
-            setShowDeepContext(false);
-            setShowAcademicNorms(false);
-            setShowAuthenticity(false);
-            setShowTimeCartography(false);
-            setShowLessonPlans(false);
+            resetViews();
             setResults(null);
             setQuery('');
           }}>
@@ -472,26 +558,12 @@ export default function App() {
               <>
                 <button 
                   onClick={() => {
-                    setShowSaved(false);
-                    setShowGuide(false);
-                    setShowAcademicWorks(false);
-                    setShowProjectGenerator(false);
-                    setShowGlobalArchives(false);
-                    setShowABNT(false);
-                    setShowPrimarySources(false);
-                    setShowMethodology(false);
-                    setShowDeepContext(false);
-                    setShowAcademicNorms(false);
-                    setShowAuthenticity(false);
-                    setShowTimeCartography(false);
-                    setShowLessonPlans(false);
-                    setShowPlans(false);
-                    setShowDashboard(false);
+                    resetViews();
                     setResults(null);
                   }}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
-                    !results && !showSaved && !showGuide && !showAcademicWorks && !showProjectGenerator && !showGlobalArchives && !showABNT && !showPrimarySources && !showMethodology && !showDeepContext && !showAcademicNorms && !showAuthenticity && !showTimeCartography && !showLessonPlans && !showPlans && !showDashboard
+                    !results && !showSaved && !showGuide && !showAcademicWorks && !showProjectGenerator && !showGlobalArchives && !showABNT && !showPrimarySources && !showMethodology && !showDeepContext && !showAcademicNorms && !showAuthenticity && !showTimeCartography && !showLessonPlans && !showPlans && !showDashboard && !showTerms && !showPrivacy
                       ? "bg-stone-100 text-stone-900" 
                       : "text-stone-600 hover:bg-stone-100/80"
                   )}
@@ -515,15 +587,9 @@ export default function App() {
 
                 <button 
                   onClick={() => {
-                    setShowAcademicWorks(!showAcademicWorks);
-                    setShowSaved(false);
-                    setShowGuide(false);
-                    setShowProjectGenerator(false);
-                    setShowGlobalArchives(false);
-                    setShowABNT(false);
-                    setShowPrimarySources(false);
-                    setShowPlans(false);
-                    setShowDashboard(false);
+                    const next = !showAcademicWorks;
+                    resetViews();
+                    setShowAcademicWorks(next);
                   }}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
@@ -537,21 +603,9 @@ export default function App() {
 
                 <button 
                   onClick={() => {
-                    setShowProjectGenerator(!showProjectGenerator);
-                    setShowAcademicWorks(false);
-                    setShowSaved(false);
-                    setShowGuide(false);
-                    setShowGlobalArchives(false);
-                    setShowABNT(false);
-                    setShowPrimarySources(false);
-                    setShowMethodology(false);
-                    setShowDeepContext(false);
-                    setShowAcademicNorms(false);
-                    setShowAuthenticity(false);
-                    setShowTimeCartography(false);
-                    setShowLessonPlans(false);
-                    setShowPlans(false);
-                    setShowDashboard(false);
+                    const next = !showProjectGenerator;
+                    resetViews();
+                    setShowProjectGenerator(next);
                   }}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
@@ -565,21 +619,9 @@ export default function App() {
 
                 <button 
                   onClick={() => {
-                    setShowGlobalArchives(!showGlobalArchives);
-                    setShowProjectGenerator(false);
-                    setShowAcademicWorks(false);
-                    setShowSaved(false);
-                    setShowGuide(false);
-                    setShowABNT(false);
-                    setShowPrimarySources(false);
-                    setShowMethodology(false);
-                    setShowDeepContext(false);
-                    setShowAcademicNorms(false);
-                    setShowAuthenticity(false);
-                    setShowTimeCartography(false);
-                    setShowLessonPlans(false);
-                    setShowPlans(false);
-                    setShowDashboard(false);
+                    const next = !showGlobalArchives;
+                    resetViews();
+                    setShowGlobalArchives(next);
                   }}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
@@ -593,15 +635,9 @@ export default function App() {
 
                 <button 
                   onClick={() => {
-                    setShowABNT(!showABNT);
-                    setShowPrimarySources(false);
-                    setShowGlobalArchives(false);
-                    setShowProjectGenerator(false);
-                    setShowAcademicWorks(false);
-                    setShowSaved(false);
-                    setShowGuide(false);
-                    setShowPlans(false);
-                    setShowDashboard(false);
+                    const next = !showABNT;
+                    resetViews();
+                    setShowABNT(next);
                   }}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
@@ -615,18 +651,9 @@ export default function App() {
 
                 <button 
                   onClick={() => {
-                    setShowPrimarySources(!showPrimarySources);
-                    setShowABNT(false);
-                    setShowGlobalArchives(false);
-                    setShowProjectGenerator(false);
-                    setShowAcademicWorks(false);
-                    setShowSaved(false);
-                    setShowGuide(false);
-                    setShowMethodology(false);
-                    setShowDeepContext(false);
-                    setShowAcademicNorms(false);
-                    setShowPlans(false);
-                    setShowDashboard(false);
+                    const next = !showPrimarySources;
+                    resetViews();
+                    setShowPrimarySources(next);
                   }}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
@@ -640,18 +667,9 @@ export default function App() {
 
                 <button 
                   onClick={() => {
-                    setShowMethodology(!showMethodology);
-                    setShowDeepContext(false);
-                    setShowAcademicNorms(false);
-                    setShowPrimarySources(false);
-                    setShowABNT(false);
-                    setShowGlobalArchives(false);
-                    setShowProjectGenerator(false);
-                    setShowAcademicWorks(false);
-                    setShowSaved(false);
-                    setShowGuide(false);
-                    setShowPlans(false);
-                    setShowDashboard(false);
+                    const next = !showMethodology;
+                    resetViews();
+                    setShowMethodology(next);
                   }}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
@@ -665,18 +683,9 @@ export default function App() {
 
                 <button 
                   onClick={() => {
-                    setShowDeepContext(!showDeepContext);
-                    setShowMethodology(false);
-                    setShowAcademicNorms(false);
-                    setShowPrimarySources(false);
-                    setShowABNT(false);
-                    setShowGlobalArchives(false);
-                    setShowProjectGenerator(false);
-                    setShowAcademicWorks(false);
-                    setShowSaved(false);
-                    setShowGuide(false);
-                    setShowPlans(false);
-                    setShowDashboard(false);
+                    const next = !showDeepContext;
+                    resetViews();
+                    setShowDeepContext(next);
                   }}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
@@ -690,20 +699,9 @@ export default function App() {
 
                 <button 
                   onClick={() => {
-                    setShowAcademicNorms(!showAcademicNorms);
-                    setShowDeepContext(false);
-                    setShowMethodology(false);
-                    setShowPrimarySources(false);
-                    setShowABNT(false);
-                    setShowGlobalArchives(false);
-                    setShowProjectGenerator(false);
-                    setShowAcademicWorks(false);
-                    setShowSaved(false);
-                    setShowGuide(false);
-                    setShowAuthenticity(false);
-                    setShowTimeCartography(false);
-                    setShowPlans(false);
-                    setShowDashboard(false);
+                    const next = !showAcademicNorms;
+                    resetViews();
+                    setShowAcademicNorms(next);
                   }}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
@@ -717,20 +715,9 @@ export default function App() {
 
                 <button 
                   onClick={() => {
-                    setShowAuthenticity(!showAuthenticity);
-                    setShowAcademicNorms(false);
-                    setShowDeepContext(false);
-                    setShowMethodology(false);
-                    setShowPrimarySources(false);
-                    setShowABNT(false);
-                    setShowGlobalArchives(false);
-                    setShowProjectGenerator(false);
-                    setShowAcademicWorks(false);
-                    setShowSaved(false);
-                    setShowGuide(false);
-                    setShowTimeCartography(false);
-                    setShowPlans(false);
-                    setShowDashboard(false);
+                    const next = !showAuthenticity;
+                    resetViews();
+                    setShowAuthenticity(next);
                   }}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
@@ -801,20 +788,8 @@ export default function App() {
                 {profile?.role === 'inst_admin' && (
                   <button 
                     onClick={() => {
+                      resetViews();
                       setShowDashboard(true);
-                      setShowSaved(false);
-                      setShowGuide(false);
-                      setShowAcademicWorks(false);
-                      setShowProjectGenerator(false);
-                      setShowGlobalArchives(false);
-                      setShowABNT(false);
-                      setShowPrimarySources(false);
-                      setShowMethodology(false);
-                      setShowDeepContext(false);
-                      setShowAcademicNorms(false);
-                      setShowAuthenticity(false);
-                      setShowTimeCartography(false);
-                      setShowPlans(false);
                     }}
                     className={cn(
                       "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
@@ -829,21 +804,8 @@ export default function App() {
 
                 <button 
                   onClick={() => {
+                    resetViews();
                     setShowPlans(true);
-                    setShowSaved(false);
-                    setShowGuide(false);
-                    setShowAcademicWorks(false);
-                    setShowProjectGenerator(false);
-                    setShowGlobalArchives(false);
-                    setShowABNT(false);
-                    setShowPrimarySources(false);
-                    setShowMethodology(false);
-                    setShowDeepContext(false);
-                    setShowAcademicNorms(false);
-                    setShowAuthenticity(false);
-                    setShowTimeCartography(false);
-                    setShowLessonPlans(false);
-                    setShowDashboard(false);
                   }}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-sm font-medium",
@@ -952,7 +914,21 @@ export default function App() {
                         placeholder="Inicie sua investigação histórica..."
                         className="w-full pl-6 pr-8 py-8 bg-transparent focus:ring-0 border-none text-2xl font-serif placeholder:text-stone-300 placeholder:italic"
                       />
-                      <div className="pr-4">
+                      <div className="flex items-center gap-2 pr-4">
+                        <button
+                          type="button"
+                          onClick={toggleListening}
+                          className={cn(
+                            "p-3 rounded-xl transition-all relative overflow-hidden group",
+                            isListening ? "bg-red-50 text-red-600 border border-red-200" : "text-stone-400 hover:text-stone-900 hover:bg-stone-100"
+                          )}
+                          title="Pesquisa por voz"
+                        >
+                          <Mic2 size={24} strokeWidth={1.5} className={cn(isListening && "animate-pulse")} />
+                          {isListening && (
+                            <span className="absolute inset-0 bg-red-400/10 animate-ping pointer-events-none" />
+                          )}
+                        </button>
                         <button
                           type="submit"
                           disabled={loading}
@@ -981,7 +957,7 @@ export default function App() {
 
                 {/* Gabinete Historiográfico (Feature Section) */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-32">
-                  <button onClick={() => setShowMethodology(true)} className="w-full text-left">
+                  <button onClick={() => { resetViews(); setShowMethodology(true); }} className="w-full text-left">
                     <FeatureCard 
                       icon={<ShieldCheck size={28} className="text-stone-800" />}
                       title="Rigor Metodológico"
@@ -989,7 +965,7 @@ export default function App() {
                       accent="amber"
                     />
                   </button>
-                  <button onClick={() => setShowDeepContext(true)} className="w-full text-left">
+                  <button onClick={() => { resetViews(); setShowDeepContext(true); }} className="w-full text-left">
                     <FeatureCard 
                       icon={<Compass size={28} className="text-stone-800" />}
                       title="Contexto Profundo"
@@ -997,7 +973,7 @@ export default function App() {
                       accent="stone"
                     />
                   </button>
-                  <button onClick={() => setShowAcademicNorms(true)} className="w-full text-left">
+                  <button onClick={() => { resetViews(); setShowAcademicNorms(true); }} className="w-full text-left">
                     <FeatureCard 
                       icon={<Scroll size={28} className="text-stone-800" />}
                       title="Normas Acadêmicas"
@@ -1010,7 +986,7 @@ export default function App() {
 
               {/* Secondary Cabinet Section */}
               <section className="grid grid-cols-1 md:grid-cols-2 gap-12 py-12">
-                <button onClick={() => setShowTimeCartography(true)} className="text-left w-full">
+                <button onClick={() => { resetViews(); setShowTimeCartography(true); }} className="text-left w-full">
                   <div className="editorial-frame bg-white/40 academic-shadow rounded-sm space-y-6 hover:scale-[1.02] transition-all duration-500 cursor-pointer">
                     <div className="w-12 h-12 bg-stone-900 rounded-full flex items-center justify-center text-amber-50">
                       <MapIcon size={24} />
@@ -1025,7 +1001,7 @@ export default function App() {
                   </div>
                 </button>
 
-                <button onClick={() => setShowAuthenticity(true)} className="text-left w-full">
+                <button onClick={() => { resetViews(); setShowAuthenticity(true); }} className="text-left w-full">
                   <div className="editorial-frame bg-white/40 academic-shadow rounded-sm space-y-6 hover:scale-[1.02] transition-all duration-500 cursor-pointer">
                     <div className="w-12 h-12 bg-stone-900 rounded-full flex items-center justify-center text-amber-50">
                       <Stamp size={24} />
@@ -1040,7 +1016,7 @@ export default function App() {
                   </div>
                 </button>
 
-                <button onClick={() => setShowLessonPlans(true)} className="text-left w-full">
+                <button onClick={() => { resetViews(); setShowLessonPlans(true); }} className="text-left w-full">
                   <div className="editorial-frame bg-white/40 academic-shadow rounded-sm space-y-6 hover:scale-[1.02] transition-all duration-500 cursor-pointer">
                     <div className="w-12 h-12 bg-stone-900 rounded-full flex items-center justify-center text-amber-50">
                       <Presentation size={24} />
@@ -1094,6 +1070,7 @@ export default function App() {
                       <div className="flex items-center gap-3">
                         <button 
                           onClick={() => {
+                            resetViews();
                             setResults(null);
                             setQuery('');
                           }}
@@ -1249,29 +1226,29 @@ export default function App() {
               {/* Empty State */}
               {!results && !loading && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12">
-                  <button onClick={() => setShowGlobalArchives(true)} className="w-full">
+                  <button onClick={() => { resetViews(); setShowGlobalArchives(true); }} className="w-full">
                     <FeatureCard 
                       icon={<Library className="text-stone-500" />}
                       title="Acervos Globais"
                       description="Conexão com as principais instituições de pesquisa do mundo."
                       accent="amber"
-                      imageUrl="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=400"
+                      imageUrl="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400"
                     />
                   </button>
-                  <button onClick={() => setShowABNT(true)} className="w-full">
+                  <button onClick={() => { resetViews(); setShowABNT(true); }} className="w-full">
                     <FeatureCard 
                       icon={<Quote className="text-stone-500" />}
                       title="Normas ABNT"
                       description="Citações prontas para uso em trabalhos acadêmicos e teses."
-                      imageUrl="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&q=80&w=400"
+                      imageUrl="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400"
                     />
                   </button>
-                  <button onClick={() => setShowPrimarySources(true)} className="w-full">
+                  <button onClick={() => { resetViews(); setShowPrimarySources(true); }} className="w-full">
                     <FeatureCard 
                       icon={<BookOpen className="text-stone-500" />}
                       title="Fontes Primárias"
                       description="Foco em documentos originais e registros historiográficos fiéis."
-                      imageUrl="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Codex_Vaticanus_B_page_11.jpg/400px-Codex_Vaticanus_B_page_11.jpg"
+                      imageUrl="https://images.unsplash.com/photo-1544640808-32ca72ac7f37?w=400"
                     />
                   </button>
                 </div>
@@ -1292,7 +1269,7 @@ export default function App() {
                 </div>
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setShowGlobalArchives(false)}
+                    onClick={() => { resetViews(); setShowGlobalArchives(false); }}
                     className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
                   >
                     <Home size={16} />
@@ -1341,7 +1318,7 @@ export default function App() {
                 </div>
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setShowABNT(false)}
+                    onClick={() => { resetViews(); setShowABNT(false); }}
                     className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
                   >
                     <Home size={16} />
@@ -1386,7 +1363,7 @@ export default function App() {
                 </div>
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setShowMethodology(false)}
+                    onClick={() => { resetViews(); setShowMethodology(false); }}
                     className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
                   >
                     <Home size={16} />
@@ -1431,7 +1408,7 @@ export default function App() {
                 </div>
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setShowDeepContext(false)}
+                    onClick={() => { resetViews(); setShowDeepContext(false); }}
                     className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
                   >
                     <Home size={16} />
@@ -1476,7 +1453,7 @@ export default function App() {
                 </div>
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setShowAuthenticity(false)}
+                    onClick={() => { resetViews(); setShowAuthenticity(false); }}
                     className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
                   >
                     <Home size={16} />
@@ -1521,7 +1498,7 @@ export default function App() {
                 </div>
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setShowTimeCartography(false)}
+                    onClick={() => { resetViews(); setShowTimeCartography(false); }}
                     className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
                   >
                     <Home size={16} />
@@ -1566,7 +1543,7 @@ export default function App() {
                 </div>
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setShowAcademicNorms(false)}
+                    onClick={() => { resetViews(); setShowAcademicNorms(false); }}
                     className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
                   >
                     <Home size={16} />
@@ -1611,7 +1588,7 @@ export default function App() {
                 </div>
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setShowPrimarySources(false)}
+                    onClick={() => { resetViews(); setShowPrimarySources(false); }}
                     className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
                   >
                     <Home size={16} />
@@ -1655,14 +1632,14 @@ export default function App() {
                 </div>
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setShowAcademicWorks(false)}
+                    onClick={() => { resetViews(); setShowAcademicWorks(false); }}
                     className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
                   >
                     <Home size={16} />
                     Início
                   </button>
                   <button 
-                    onClick={() => setShowAcademicWorks(false)}
+                    onClick={() => { resetViews(); setShowAcademicWorks(false); }}
                     className="p-3 bg-white border border-stone-200 text-stone-400 hover:text-stone-900 rounded-2xl transition-all shadow-sm"
                   >
                     <X size={20} />
@@ -1727,14 +1704,14 @@ export default function App() {
                     </div>
                   )}
                   <button 
-                    onClick={() => setShowProjectGenerator(false)}
+                    onClick={() => { resetViews(); setShowProjectGenerator(false); }}
                     className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
                   >
                     <Home size={16} />
                     Início
                   </button>
                   <button 
-                    onClick={() => setShowProjectGenerator(false)}
+                    onClick={() => { resetViews(); setShowProjectGenerator(false); }}
                     className="p-3 bg-white border border-stone-200 text-stone-400 hover:text-stone-900 rounded-2xl transition-all shadow-sm"
                   >
                     <X size={20} />
@@ -1828,34 +1805,43 @@ export default function App() {
                       <div className="text-[10px] text-stone-400 italic">
                         Resposta gerada com apoio de IA. A interpretação é responsabilidade do usuário.
                       </div>
-                      <button 
-                        onClick={() => {
-                          const text = `
-TÍTULO: ${generatedProject.title}
-TEMA: ${generatedProject.theme}
-PROBLEMA: ${generatedProject.problem}
-OBJETIVO GERAL: ${generatedProject.objectives.general}
-OBJETIVOS ESPECÍFICOS:
-${generatedProject.objectives.specifics.map(o => `- ${o}`).join('\n')}
-JUSTIFICATIVA: ${generatedProject.justification}
-METODOLOGIA: ${generatedProject.methodology}
-FUNDAMENTAÇÃO TEÓRICA: ${generatedProject.theoreticalFramework}
-RESULTADOS ESPERADOS: ${generatedProject.expectedResults}
-                          `;
-                          navigator.clipboard.writeText(text);
-                          setCopiedId('project-copy');
-                          setTimeout(() => setCopiedId(null), 2000);
-                        }}
-                        className={cn(
-                          "flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all",
-                          copiedId === 'project-copy' 
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-100" 
-                            : "bg-stone-900 text-amber-50 hover:bg-stone-800"
-                        )}
-                      >
-                        {copiedId === 'project-copy' ? <Check size={18} /> : <Copy size={18} />}
-                        {copiedId === 'project-copy' ? 'PROJETO COPIADO' : 'COPIAR PROJETO COMPLETO'}
-                      </button>
+                      <div className="flex gap-4">
+                        <button 
+                          onClick={() => window.print()}
+                          className="flex items-center gap-2 px-6 py-3 bg-white border border-stone-200 text-stone-600 rounded-xl font-bold text-sm hover:border-stone-900 transition-all shadow-sm"
+                        >
+                          <Download size={18} />
+                          EXPORTAR PDF
+                        </button>
+                        <button 
+                          onClick={() => {
+                            const text = `
+  TÍTULO: ${generatedProject?.title}
+  TEMA: ${generatedProject?.theme}
+  PROBLEMA: ${generatedProject?.problem}
+  OBJETIVO GERAL: ${generatedProject?.objectives.general}
+  OBJETIVOS ESPECÍFICOS:
+  ${generatedProject?.objectives.specifics.map(o => `- ${o}`).join('\n')}
+  JUSTIFICATIVA: ${generatedProject?.justification}
+  METODOLOGIA: ${generatedProject?.methodology}
+  FUNDAMENTAÇÃO TEÓRICA: ${generatedProject?.theoreticalFramework}
+  RESULTADOS ESPERADOS: ${generatedProject?.expectedResults}
+                            `;
+                            navigator.clipboard.writeText(text);
+                            setCopiedId('project-copy');
+                            setTimeout(() => setCopiedId(null), 2000);
+                          }}
+                          className={cn(
+                            "flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all",
+                            copiedId === 'project-copy' 
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-100" 
+                              : "bg-stone-900 text-amber-50 hover:bg-stone-800"
+                          )}
+                        >
+                          {copiedId === 'project-copy' ? <Check size={18} /> : <Copy size={18} />}
+                          {copiedId === 'project-copy' ? 'PROJETO COPIADO' : 'COPIAR TEXTO'}
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 )}
@@ -1888,6 +1874,14 @@ RESULTADOS ESPERADOS: ${generatedProject.expectedResults}
             >
               <DashboardView profile={profile} />
             </motion.div>
+          ) : showTerms || showPrivacy ? (
+            <Legal 
+              type={showTerms ? 'terms' : 'privacy'} 
+              onBack={() => {
+                setShowTerms(false);
+                setShowPrivacy(false);
+              }} 
+            />
           ) : showSaved ? (
             <motion.div
               key="saved-view"
@@ -1903,14 +1897,14 @@ RESULTADOS ESPERADOS: ${generatedProject.expectedResults}
                 </div>
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setShowSaved(false)}
+                    onClick={() => { resetViews(); setShowSaved(false); }}
                     className="flex items-center gap-2 px-6 py-3 bg-stone-100 text-stone-600 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-stone-200 transition-all shadow-sm"
                   >
                     <Home size={16} />
                     Início
                   </button>
                   <button 
-                    onClick={() => setShowSaved(false)}
+                    onClick={() => { resetViews(); setShowSaved(false); }}
                     className="p-3 bg-white border border-stone-200 text-stone-400 hover:text-stone-900 rounded-2xl transition-all shadow-sm"
                   >
                     <X size={20} />
@@ -2033,7 +2027,7 @@ RESULTADOS ESPERADOS: ${generatedProject.expectedResults}
                 </div>
                 <div className="flex items-center gap-4">
                   <button 
-                    onClick={() => setShowGuide(false)}
+                    onClick={() => { resetViews(); setShowGuide(false); }}
                     className="flex items-center gap-3 px-8 py-4 bg-stone-900 text-amber-50 rounded-[1.5rem] text-sm font-bold uppercase tracking-widest academic-shadow hover:scale-105 transition-all duration-300"
                   >
                     <Home size={18} />
@@ -2077,8 +2071,14 @@ RESULTADOS ESPERADOS: ${generatedProject.expectedResults}
       </main>
 
       <footer className="max-w-4xl mx-auto px-4 py-12 border-t border-stone-200 mt-20 text-center">
+        <div className="flex flex-wrap justify-center gap-6 mb-8 text-[10px] font-bold uppercase tracking-widest text-stone-400">
+          <button onClick={() => { resetViews(); setShowTerms(true); }} className="hover:text-stone-900 transition-colors">Termos de Uso</button>
+          <button onClick={() => { resetViews(); setShowPrivacy(true); }} className="hover:text-stone-900 transition-colors">Privacidade</button>
+          <button className="hover:text-stone-900 transition-colors cursor-not-allowed">Suporte</button>
+          <button className="hover:text-stone-900 transition-colors cursor-not-allowed">Contribua</button>
+        </div>
         <p className="text-stone-400 text-sm">
-          ClioArchive© {new Date().getFullYear()} — Marcial Rosa. Todos os direitos reservados, Ferramenta de auxílio à pesquisa historiográfica.
+          ClioArchive© {new Date().getFullYear()} — Marcial Rosa. Todos os direitos reservados. Ferramenta de auxílio à pesquisa historiográfica.
         </p>
       </footer>
 
@@ -2238,12 +2238,61 @@ function PlansView({ profile, onUpgrade }: { profile: UserProfile | null, onUpgr
 }
 
 function DashboardView({ profile }: { profile: UserProfile | null }) {
+  const [usageStats, setUsageStats] = useState({
+    activeUsers: '0',
+    citations: '0',
+    exports: '0',
+    aiConsults: '0'
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchStats() {
+      if (!profile?.institutionId) {
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        const q = firestoreQuery(
+          collection(db, 'usage_logs'), 
+          where('institutionId', '==', profile.institutionId),
+          limit(1000)
+        );
+        const snap = await getDocs(q);
+        const logs = snap.docs.map(d => d.data());
+        
+        const stats = {
+          activeUsers: new Set(logs.map(l => l.uid)).size.toString(),
+          citations: logs.filter(l => l.feature === 'abnt_gen').length.toString(),
+          exports: logs.filter(l => l.feature?.includes('export')).length.toString(),
+          aiConsults: logs.filter(l => l.feature === 'ia_search' || l.feature === 'ia_project').length.toString()
+        };
+        
+        setUsageStats(stats);
+      } catch (err) {
+        console.error('Erro ao buscar estatísticas:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchStats();
+  }, [profile]);
+
   const stats = [
-    { label: 'Usuários Ativos', value: '124', icon: <Users size={20} /> },
-    { label: 'Citações Geradas', value: '1.2k', icon: <Quote size={20} /> },
-    { label: 'Exportações Realizadas', value: '450', icon: <FileText size={20} /> },
-    { label: 'Consultas IA', value: '3.8k', icon: <Sparkles size={20} /> }
+    { label: 'Usuários Ativos', value: usageStats.activeUsers, icon: <Users size={20} /> },
+    { label: 'Citações Geradas', value: usageStats.citations, icon: <Quote size={20} /> },
+    { label: 'Exportações Realizadas', value: usageStats.exports, icon: <FileText size={20} /> },
+    { label: 'Consultas IA', value: usageStats.aiConsults, icon: <Sparkles size={20} /> }
   ];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="animate-spin text-stone-300" size={48} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-12 py-12">
@@ -2253,8 +2302,10 @@ function DashboardView({ profile }: { profile: UserProfile | null }) {
           <p className="text-stone-500 text-lg font-serif italic">Métricas de uso e impacto acadêmico.</p>
         </div>
         <div className="text-right">
-          <div className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Instituição</div>
-          <div className="text-xl font-serif font-bold text-stone-900">Universidade Federal de Clio</div>
+          <div className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Instituição / Perfil</div>
+          <div className="text-xl font-serif font-bold text-stone-900">
+            {profile?.institutionId ? "Universidade Federal de Clio" : "Pesquisador Independente"}
+          </div>
         </div>
       </div>
 

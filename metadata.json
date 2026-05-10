@@ -1,5 +1,5 @@
 {
   "name": " Pesquisa Historiográfica",
   "description": "Plataforma de pesquisa historiográfica com alto rigor acadêmico e citações ABNT automáticas.",
-  "requestFramePermissions": []
+  "requestFramePermissions": ["microphone"]
 }
